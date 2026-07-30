@@ -73,15 +73,13 @@
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
         
-        /* ===== BIG ARTICLE POPUP ===== */
+        /* ===== ARTICLE POPUP ===== */
         .article-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:99999;padding:30px;overflow-y:auto}
         .article-overlay.active{display:block}
         .article-overlay .article-content{background:#0a0a0a;border-radius:20px;max-width:800px;margin:10px auto;padding:40px 45px 45px;border:1px solid rgba(255,215,0,0.15);min-height:80vh;max-height:95vh;overflow-y:auto;position:relative}
         .article-overlay .article-content .close-btn{position:sticky;top:0;float:right;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:50%;color:#FFD700;font-size:1.8em;width:50px;height:50px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;z-index:10}
         .article-overlay .article-content .close-btn:hover{background:rgba(255,215,0,0.2);transform:rotate(90deg)}
         .article-overlay .article-content .article-title{color:#FFD700;font-size:2em;margin-bottom:16px;padding-right:60px;line-height:1.3}
-        .article-overlay .article-content .article-meta{color:#888;font-size:0.8em;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid rgba(255,215,0,0.08);display:flex;gap:20px;flex-wrap:wrap}
-        .article-overlay .article-content .article-meta span{display:flex;align-items:center;gap:6px}
         .article-overlay .article-content .article-body{color:#e0e0e0;line-height:2;font-size:1.05em}
         .article-overlay .article-content .article-body p{margin-bottom:16px}
         .article-overlay .article-content .article-source{text-align:center;color:#666;font-size:0.75em;padding:16px 0 0;border-top:1px solid rgba(255,215,0,0.06);margin-top:20px}
@@ -104,35 +102,6 @@
         .live-indicator{display:none;align-items:center;gap:6px;background:rgba(204,0,0,0.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(204,0,0,0.2);font-size:0.7em;color:#cc0000;font-weight:600}
         .live-indicator .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cc0000;animation:pulse-dot 1s ease-in-out infinite}
         .live-indicator.active{display:flex}
-
-        .trending-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
-        .trending-container .trending-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
-        .trending-container .trending-header .icon{font-size:1.3em}
-        .trending-container .trending-header h3{font-size:0.9em;font-weight:700;color:var(--text-primary);letter-spacing:0.5px}
-        .trending-container .trending-header h3 span{color:#ff4a4a}
-        .trending-container .trending-header .live-indicator-header{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:0.65em;color:var(--text-muted)}
-        .trending-container .trending-header .live-indicator-header .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4caf50}
-        .trending-container .trending-header .live-indicator-header .dot.updating{background:#ff4a4a;animation:pulse-dot 0.5s ease-in-out 3}
-        .trending-container .trending-topics{display:flex;flex-wrap:wrap;gap:8px}
-        .trending-container .trending-topics .topic{background:var(--trending-bg);border:1px solid var(--trending-border);border-radius:20px;padding:6px 14px;font-size:0.75em;color:var(--text-secondary);cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;gap:6px;font-weight:500}
-        .trending-container .trending-topics .topic:hover{background:rgba(255,74,74,0.15);transform:translateY(-2px)}
-        .trending-container .trending-topics .topic .count{background:#ff4a4a;color:#fff;border-radius:50%;padding:0 6px;font-size:0.7em;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
-        .trending-container .trending-topics .topic .emoji{font-size:0.9em}
-        .trending-container .trending-topics .topic.active{background:#ff4a4a;color:#fff;border-color:#ff4a4a}
-        .trending-container .trending-topics .topic.active .count{background:#fff;color:#ff4a4a}
-        .trending-container .trending-empty{color:var(--text-muted);font-size:0.8em;padding:8px 0;text-align:center}
-
-        .search-container{background:var(--bg-card);border-radius:10px;padding:15px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
-        .search-container .search-wrapper{display:flex;align-items:center;gap:12px;position:relative}
-        .search-container .search-icon{font-size:1.2em;color:var(--text-muted)}
-        .search-container input{flex:1;padding:10px 16px;border-radius:8px;border:1px solid var(--search-border);background:var(--search-bg);color:var(--search-text);font-size:0.95em;transition:all 0.3s ease;outline:none;width:100%}
-        .search-container input:focus{border-color:var(--search-focus);box-shadow:0 0 0 3px rgba(255,74,74,0.1)}
-        .search-container input::placeholder{color:var(--text-light)}
-        .search-container .search-clear{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2em;padding:0 8px;display:none;transition:color 0.3s ease}
-        .search-container .search-clear:hover{color:var(--text-primary)}
-        .search-container .search-clear.show{display:block}
-        .search-container .search-count{font-size:0.75em;color:var(--text-muted);white-space:nowrap;padding:0 8px}
-        .search-container .search-count span{color:var(--text-primary);font-weight:700}
 
         .top-bar{background:var(--bg-topbar);color:#aaa;padding:8px 0;font-size:0.7em;border-bottom:1px solid #333;display:block;transition:background 0.3s ease}
         .top-bar .inner{max-width:1100px;margin:0 auto;padding:0 15px;display:flex;justify-content:space-between;align-items:center}
@@ -263,8 +232,7 @@
         .article-overlay .article-content .article-body{font-size:0.9em}}
     </style>
 </head>
-<body>
-<!-- LIVE BANNER -->
+<body><!-- LIVE BANNER -->
 <div class="live-banner" id="liveBanner">
     <span class="live-dot"></span>
     <span class="live-label">🔴 LIVE</span>
@@ -323,7 +291,7 @@
                 <span id="updateStatus">Auto-refresh</span>
             </div>
         </div>
-        <div class="trending-topics" id        <div class="trending-topics" id="trendingTopics">
+        <div class="trending-topics" id="trendingTopics">
             <div class="trending-empty">Loading trending topics...</div>
         </div>
     </div>
@@ -362,9 +330,7 @@
     <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
     <div class="footer"><span class="heart">❤</span> NewsPro • All sources credited</div>
 </div>
-
-<script>
-    // ===== STATE =====
+<script>    // ===== STATE =====
     let currentView = 'all';
     let currentCategory = 'all';
     let allArticles = [];
@@ -467,9 +433,7 @@
     function closeLiveBanner() {
         document.getElementById('liveBanner').classList.remove('show');
         document.getElementById('liveIndicator').classList.remove('active');
-    }
-
-    // ===== SEARCH =====
+    }    // ===== SEARCH =====
     function handleSearch(query) {
         searchQuery = query.trim().toLowerCase();
         const clearBtn = document.getElementById('searchClear');
@@ -651,9 +615,7 @@
                 <button onclick="loadNews()" style="margin-top:15px;padding:10px 25px;background:#ff4a4a;border:none;border-radius:30px;color:#fff;font-weight:600;cursor:pointer;">Retry</button>
             </div>`;
         }
-    }
-
-    // ===== UPDATE CATEGORIES =====
+    }    // ===== UPDATE CATEGORIES =====
     function updateCategories(categories) {
         const container = document.getElementById('categoryFilter');
         container.innerHTML = `<button class="active" data-category="all">All</button>`;
@@ -797,7 +759,6 @@
                 
                 html += `</div>`;
                 
-                // Share buttons
                 html += `<div class="share-buttons">
                     <button onclick="shareArticle('whatsapp')" style="background:#25D366;color:#fff;">💬</button>
                     <button onclick="shareArticle('twitter')" style="background:#000;color:#fff;">🐦</button>
