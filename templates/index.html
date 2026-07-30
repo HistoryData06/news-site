@@ -73,19 +73,30 @@
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
         
-        /* ARTICLE POPUP */
-        .article-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:9999;padding:20px;overflow-y:auto}
+        /* ===== BIG ARTICLE POPUP ===== */
+        .article-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);z-index:99999;padding:30px;overflow-y:auto}
         .article-overlay.active{display:block}
-        .article-overlay .article-content{background:#0a0a0a;border-radius:16px;max-width:600px;margin:20px auto;padding:30px;border:1px solid rgba(255,215,0,0.15);max-height:90vh;overflow-y:auto;position:relative}
-        .article-overlay .article-content .close-btn{position:sticky;top:0;float:right;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:50%;color:#FFD700;font-size:1.5em;width:40px;height:40px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center}
+        .article-overlay .article-content{background:#0a0a0a;border-radius:20px;max-width:800px;margin:10px auto;padding:40px 45px 45px;border:1px solid rgba(255,215,0,0.15);min-height:80vh;max-height:95vh;overflow-y:auto;position:relative}
+        .article-overlay .article-content .close-btn{position:sticky;top:0;float:right;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:50%;color:#FFD700;font-size:1.8em;width:50px;height:50px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;z-index:10}
         .article-overlay .article-content .close-btn:hover{background:rgba(255,215,0,0.2);transform:rotate(90deg)}
-        .article-overlay .article-content .article-title{color:#FFD700;font-size:1.5em;margin-bottom:16px;padding-right:50px}
-        .article-overlay .article-content .article-text{color:#ddd;line-height:1.9;font-size:0.95em}
-        .article-overlay .article-content .article-text p{margin-bottom:12px}
-        .article-overlay .article-content .loading-text{color:#888;text-align:center;padding:40px 0}
+        .article-overlay .article-content .article-title{color:#FFD700;font-size:2em;margin-bottom:16px;padding-right:60px;line-height:1.3}
+        .article-overlay .article-content .article-meta{color:#888;font-size:0.8em;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid rgba(255,215,0,0.08);display:flex;gap:20px;flex-wrap:wrap}
+        .article-overlay .article-content .article-meta span{display:flex;align-items:center;gap:6px}
+        .article-overlay .article-content .article-body{color:#e0e0e0;line-height:2;font-size:1.05em}
+        .article-overlay .article-content .article-body p{margin-bottom:16px}
+        .article-overlay .article-content .article-body h3{color:#FFD700;font-size:1.2em;margin:24px 0 12px}
+        .article-overlay .article-content .article-body ul{padding-left:25px;margin-bottom:16px}
+        .article-overlay .article-content .article-body li{margin-bottom:6px}
+        .article-overlay .article-content .loading-text{color:#888;text-align:center;padding:80px 0;font-size:1.2em}
+        .article-overlay .article-content .article-source{text-align:center;color:#666;font-size:0.75em;padding:16px 0 0;border-top:1px solid rgba(255,215,0,0.06);margin-top:20px}
         body.dark-mode .article-overlay .article-content{background:#1a1a1a}
-        body.dark-mode .article-overlay .article-content .article-text{color:#ccc}
+        body.dark-mode .article-overlay .article-content .article-body{color:#d0d0d0}
+        
+        /* ===== SPINNER ===== */
+        .spinner{display:inline-block;width:40px;height:40px;border:3px solid #333;border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+        @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
+        /* ===== LIVE BANNER ===== */
         .live-banner{background:var(--live-bg);color:var(--live-text);padding:8px 20px;display:none;align-items:center;gap:15px;position:sticky;top:0;z-index:999;box-shadow:0 2px 15px rgba(204,0,0,0.3);transition:all 0.3s ease}
         .live-banner.show{display:flex}
         .live-banner .live-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse-dot 1s ease-in-out infinite;flex-shrink:0}
@@ -196,8 +207,6 @@
         .no-results{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1/-1}
         .no-results .big-icon{font-size:3em;display:block;margin-bottom:12px}
         .loading-state{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1 / -1;transition:color 0.3s ease}
-        .spinner{display:inline-block;width:40px;height:40px;border:3px solid var(--border-color);border-top:3px solid #ff4a4a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;transition:border-color 0.3s ease}
-        @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
         .refresh-btn{display:block;width:100%;max-width:280px;margin:35px auto 0;padding:14px 30px;background:#ff4a4a;border:none;border-radius:50px;color:#fff;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:2px;transition:all .3s ease;font-size:0.85em;box-shadow:0 4px 15px rgba(255,74,74,0.2)}
         .refresh-btn:hover{background:#cc0000;transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,74,74,0.3)}
 
@@ -239,7 +248,12 @@
         .live-banner{padding:6px 12px}
         .live-banner .live-text{font-size:0.75em}
         .live-banner .live-label{font-size:0.6em}
-        .live-banner .live-count{font-size:0.6em}}
+        .live-banner .live-count{font-size:0.6em}
+        .article-overlay{padding:15px}
+        .article-overlay .article-content{padding:20px 18px;max-width:100%;margin:0;min-height:auto;max-height:100vh;border-radius:12px}
+        .article-overlay .article-content .article-title{font-size:1.4em;padding-right:50px}
+        .article-overlay .article-content .close-btn{width:40px;height:40px;font-size:1.4em}
+        .article-overlay .article-content .article-body{font-size:0.95em;line-height:1.8}}
         @media(max-width:480px){.header .logo{font-size:1.3em}
         .header .subtitle{font-size:0.6em}
         .article-card .card-image{height:140px}
@@ -247,7 +261,10 @@
         .search-container .search-wrapper{flex-wrap:wrap}
         .search-container .search-count{font-size:0.65em}
         .article-card .card-content .save-btn{width:28px;height:28px;font-size:0.85em}
-        .trending-container .trending-topics{gap:6px}}
+        .trending-container .trending-topics{gap:6px}
+        .article-overlay .article-content{padding:15px 12px}
+        .article-overlay .article-content .article-title{font-size:1.2em}
+        .article-overlay .article-content .article-body{font-size:0.9em}}
     </style>
 </head>
 <body><!-- LIVE BANNER -->
@@ -287,7 +304,7 @@
     </div>
 </div>
 
-<!-- ARTICLE POPUP -->
+<!-- ===== BIG ARTICLE POPUP ===== -->
 <div class="article-overlay" id="articleOverlay" onclick="if(event.target===this)closeArticle()">
     <div class="article-content" id="articleContent">
         <button class="close-btn" onclick="closeArticle()">✕</button>
@@ -457,7 +474,9 @@
         const status = document.getElementById('updateStatus');
         if (isLiveEnabled) { status.textContent = 'Auto-refresh'; startLiveUpdates(); } 
         else { status.textContent = '⏸️ Paused'; stopLiveUpdates(); }
-    }    // ===== SEARCH =====
+    }
+
+    // ===== SEARCH =====
     function handleSearch(query) {
         searchQuery = query.trim().toLowerCase();
         const clearBtn = document.getElementById('searchClear');
@@ -528,9 +547,7 @@
             const count = savedArticles.length;
             savedBtn.innerHTML = `⭐ Saved ${count > 0 ? `<span class="count">${count}</span>` : ''}`;
         }
-    }
-
-    // ===== TRENDING TOPICS =====
+    }    // ===== TRENDING TOPICS =====
     function extractTrendingTopics(articles) {
         const topicMap = {};
         const stopWords = ['the','a','an','of','for','on','at','to','in','with','without','and','but','or','yet','so','as','by','from','into','through','during','including','after','before','when','where','who','which','that','this','these','those','then','than','would','could','should','may','might','will','shall','have','has','had','do','does','did','more','most','some','any','no','only','own','same','so','than','too','very','just','but','also','etc','vs'];
@@ -586,7 +603,9 @@
         document.getElementById('searchClear').classList.add('show');
         renderCurrentView();
         renderTrendingTopics(trendingTopics);
-    }    // ===== LOAD NEWS =====
+    }
+
+    // ===== LOAD NEWS =====
     async function loadNews() {
         const grid = document.getElementById('newsContent');
         grid.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>`;
@@ -657,9 +676,7 @@
         currentView = 'all';
         allArticlesCache = (category === 'all') ? allArticles : allArticles.filter(a => a.category === category);
         renderCurrentView();
-    }
-
-    // ===== RENDER NEWS =====
+    }    // ===== RENDER NEWS =====
     function renderNews(articles) {
         const grid = document.getElementById('newsContent');
         if (!articles || articles.length === 0) {
@@ -710,23 +727,58 @@
         updateSavedUI();
     }
 
-    // ===== ARTICLE POPUP (NO EXTERNAL LINKS) =====
+    // ===== ARTICLE POPUP (BIG + AI GENERATED 200-300 WORDS) =====
     function openArticlePopup(title, summary, source, category) {
         const overlay = document.getElementById('articleOverlay');
         const body = document.getElementById('articleBody');
         overlay.classList.add('active');
+        
         body.innerHTML = `
-            <h2 class="article-title">📰 ${title}</h2>
-            <div class="article-text">
-                <p>${summary || 'Read more about this topic in our full article.'}</p>
-                <p style="color:var(--text-muted);font-size:0.9em;margin-top:16px;border-top:1px solid var(--border-color);padding-top:12px;">
-                    📰 Source: ${source || 'NewsPro'} • 🏷️ Category: ${category || 'General'}
-                </p>
-                <p style="color:var(--text-light);font-size:0.8em;text-align:center;margin-top:8px;">
-                    📖 All content available here • No external links needed
-                </p>
+            <div class="loading-text">
+                <div class="spinner"></div>
+                <p>🤖 AI is writing a 200-300 word article...</p>
             </div>
         `;
+        
+        fetch('/api/article?title=' + encodeURIComponent(title))
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    body.innerHTML = `<p style="color:#ff6b6b;">❌ ${data.error}</p>`;
+                    return;
+                }
+                
+                const content = data.content || summary || 'No content available';
+                const paragraphs = content.split('\n').filter(p => p.trim());
+                const wordCount = data.word_count || content.split(' ').length;
+                
+                let html = `<h2 class="article-title">📰 ${data.title || title}</h2>`;
+                html += `<div class="article-meta">
+                    <span>📰 ${source || 'NewsPro'}</span>
+                    <span>🏷️ ${category || 'History'}</span>
+                    <span>📖 ${wordCount} words</span>
+                    <span>🤖 ${data.source === 'ai_generated' ? 'AI Generated' : 'Historical'}</span>
+                </div>`;
+                html += `<div class="article-body">`;
+                
+                paragraphs.forEach(p => {
+                    const trimmed = p.trim();
+                    if (trimmed) {
+                        if (trimmed.startsWith('**') && trimmed.includes('**')) {
+                            html += `<h3>${trimmed.replace(/\*\*/g, '')}</h3>`;
+                        } else {
+                            html += `<p>${trimmed}</p>`;
+                        }
+                    }
+                });
+                
+                html += `</div>`;
+                html += `<div class="article-source">📖 All content available here • No external links needed</div>`;
+                body.innerHTML = html;
+            })
+            .catch(err => {
+                body.innerHTML = `<p style="color:#ff6b6b;">❌ Failed to load article: ${err.message}</p>`;
+            });
     }
 
     function closeArticle() {
@@ -766,3 +818,4 @@
 </script>
 </body>
 </html>
+           
