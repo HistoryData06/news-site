@@ -30,6 +30,9 @@
             --search-text: #222222;
             --search-border: #dddddd;
             --search-focus: #ff4a4a;
+            --save-btn-bg: transparent;
+            --save-btn-hover: rgba(255,74,74,0.1);
+            --save-btn-active: #ff4a4a;
         }
 
         body.dark-mode {
@@ -54,6 +57,9 @@
             --search-text: #e8e8e8;
             --search-border: #3a3a3a;
             --search-focus: #ff4a4a;
+            --save-btn-bg: transparent;
+            --save-btn-hover: rgba(255,74,74,0.15);
+            --save-btn-active: #ff4a4a;
         }
 
         *{margin:0;padding:0;box-sizing:border-box}
@@ -97,6 +103,9 @@
         .category-filter button{padding:8px 18px;background:transparent;border:none;border-radius:30px;color:var(--text-muted);cursor:pointer;transition:all .25s ease;font-size:0.8em;font-weight:600}
         .category-filter button:hover{background:var(--tag-bg);color:var(--text-primary)}
         .category-filter button.active{background:#ff4a4a;color:#fff;box-shadow:0 2px 10px rgba(255,74,74,0.2)}
+        .category-filter button.saved-tab{background:var(--tag-bg);color:var(--text-muted)}
+        .category-filter button.saved-tab.active{background:#ff4a4a;color:#fff}
+        .category-filter button.saved-tab .count{background:rgba(255,255,255,0.2);padding:0 8px;border-radius:10px;font-size:0.7em;margin-left:4px}
 
         /* ===== NEWS GRID ===== */
         .news-grid{display:grid;grid-template-columns:1fr;gap:25px}
@@ -106,18 +115,23 @@
         .news-grid .featured{grid-column:1 / -1}}
 
         /* ===== ARTICLE CARD ===== */
-        .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color)}
+        .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color);position:relative}
         .article-card:hover{box-shadow:0 8px 30px var(--shadow-hover);transform:translateY(-4px);border-color:var(--text-light)}
         .article-card .card-image{width:100%;height:200px;overflow:hidden;background:#1a1a1a;position:relative}
         .article-card .card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
         .article-card:hover .card-image img{transform:scale(1.03)}
         .article-card .card-image .no-image{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555;font-size:2.5em;background:#1a1a1a}
         .article-card .card-content{padding:18px 20px 20px}
-        .article-card .card-content .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+        .article-card .card-content .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;align-items:center}
         .article-card .card-content .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:var(--source-tag-text);background:var(--source-tag-bg);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.3s ease}
         .article-card .card-content .category-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:600;color:var(--tag-text);background:var(--tag-bg);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.3s ease}
         .article-card .card-content .ai-badge{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:700;color:var(--ai-text);background:var(--ai-bg);text-transform:uppercase;letter-spacing:0.5px}
         .article-card .card-content .read-time{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:600;color:var(--read-time-text);background:var(--read-time-bg);margin-left:4px;transition:all 0.3s ease}
+        .article-card .card-content .save-btn{background:var(--save-btn-bg);border:1px solid var(--border-color);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1em;transition:all 0.3s ease;color:var(--text-muted);margin-left:auto;flex-shrink:0}
+        .article-card .card-content .save-btn:hover{background:var(--save-btn-hover);transform:scale(1.1)}
+        .article-card .card-content .save-btn.saved{color:#ff4a4a;border-color:#ff4a4a;background:rgba(255,74,74,0.1)}
+        .article-card .card-content .save-btn.saved:hover{background:rgba(255,74,74,0.2)}
+        .article-card .card-content .tags .spacer{flex:1}
         .article-card .card-content h2{font-size:1.15em;font-weight:700;margin-bottom:8px;line-height:1.4}
         .article-card .card-content h2 a{color:var(--text-primary);text-decoration:none;transition:color .2s}
         .article-card .card-content h2 a:hover{color:#ff4a4a}
@@ -128,6 +142,10 @@
         .article-card .card-content .meta .time{color:var(--text-light)}
         .article-card .card-content .read-more{color:#ff4a4a;text-decoration:none;font-weight:700;transition:all .2s;font-size:0.8em}
         .article-card .card-content .read-more:hover{color:#cc0000;text-decoration:underline}
+
+        /* ===== SAVED BADGE ON IMAGE ===== */
+        .article-card .card-image .saved-badge{position:absolute;top:12px;right:12px;background:#ff4a4a;color:#fff;padding:4px 10px;border-radius:20px;font-size:0.6em;font-weight:700;text-transform:uppercase;letter-spacing:1px;box-shadow:0 2px 10px rgba(255,74,74,0.3)}
+        .article-card .card-image .saved-badge .icon{font-size:0.9em;margin-right:4px}
 
         .no-results{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1/-1}
         .no-results .big-icon{font-size:3em;display:block;margin-bottom:12px}
@@ -142,6 +160,9 @@
 
         .footer{text-align:center;color:var(--text-light);font-size:.7em;padding:35px 0 10px;border-top:1px solid var(--border-color);margin-top:30px;transition:all 0.3s ease}
         .footer .heart{color:#ff4a4a}
+
+        /* ===== SAVED ARTICLES COUNT ===== */
+        .saved-count-badge{display:inline-block;background:#ff4a4a;color:#fff;border-radius:50%;padding:0 6px;font-size:0.6em;min-width:20px;height:20px;line-height:20px;text-align:center;font-weight:700;margin-left:4px}
 
         @media(max-width:767px){.container{padding:15px 12px 30px}
         .header{padding:15px 0}
@@ -164,7 +185,8 @@
         .article-card .card-image{height:140px}
         .news-grid{gap:15px}
         .search-container .search-wrapper{flex-wrap:wrap}
-        .search-container .search-count{font-size:0.65em}}
+        .search-container .search-count{font-size:0.65em}
+        .article-card .card-content .save-btn{width:28px;height:28px;font-size:0.85em}}
     </style>
 </head>
 <body>
@@ -232,9 +254,71 @@
 </div>
 
 <script>
+    // ===== SAVE ARTICLES =====
+    let savedArticles = JSON.parse(localStorage.getItem('newsProSaved') || '[]');
+
+    function toggleSave(article) {
+        const index = savedArticles.findIndex(a => a.link === article.link);
+        if (index > -1) {
+            savedArticles.splice(index, 1);
+        } else {
+            savedArticles.push({
+                title: article.title,
+                link: article.link,
+                source: article.source,
+                category: article.category,
+                summary: article.summary,
+                image: article.image,
+                read_time: article.read_time,
+                savedAt: new Date().toISOString()
+            });
+        }
+        localStorage.setItem('newsProSaved', JSON.stringify(savedArticles));
+        updateSavedUI();
+        renderCurrentView();
+    }
+
+    function isSaved(link) {
+        return savedArticles.some(a => a.link === link);
+    }
+
+    function updateSavedUI() {
+        // Update the category filter button
+        const savedBtn = document.querySelector('#categoryFilter button[data-category="saved"]');
+        if (savedBtn) {
+            const count = savedArticles.length;
+            savedBtn.innerHTML = `⭐ Saved ${count > 0 ? `<span class="count">${count}</span>` : ''}`;
+        }
+        // Update any save buttons on the page
+        document.querySelectorAll('.save-btn').forEach(btn => {
+            const link = btn.dataset.link;
+            if (link && isSaved(link)) {
+                btn.classList.add('saved');
+                btn.textContent = '⭐';
+            } else {
+                btn.classList.remove('saved');
+                btn.textContent = '☆';
+            }
+        });
+        // Update saved badges on images
+        document.querySelectorAll('.saved-badge').forEach(badge => {
+            const card = badge.closest('.article-card');
+            if (card) {
+                const link = card.dataset.link;
+                badge.style.display = (link && isSaved(link)) ? 'block' : 'none';
+            }
+        });
+        // Update saved count in header
+        const countBadge = document.querySelector('.saved-count-badge');
+        if (countBadge) {
+            countBadge.textContent = savedArticles.length;
+        }
+    }
+
     // ===== SEARCH =====
     let searchQuery = '';
     let allArticlesCache = [];
+    let currentView = 'all'; // 'all' or 'saved'
 
     function handleSearch(query) {
         searchQuery = query.trim().toLowerCase();
@@ -247,34 +331,59 @@
             clearBtn.classList.remove('show');
         }
         
-        if (searchQuery === '') {
-            renderNews(allArticlesCache);
-            countEl.textContent = allArticlesCache.length;
-            return;
-        }
-        
-        const filtered = allArticlesCache.filter(article => {
-            const title = article.title.toLowerCase();
-            const summary = article.summary.toLowerCase();
-            const source = article.source.toLowerCase();
-            const category = article.category.toLowerCase();
-            return title.includes(searchQuery) || 
-                   summary.includes(searchQuery) || 
-                   source.includes(searchQuery) || 
-                   category.includes(searchQuery);
-        });
-        
-        countEl.textContent = filtered.length;
-        renderNews(filtered);
+        renderCurrentView();
     }
 
     function clearSearch() {
         document.getElementById('searchInput').value = '';
         document.getElementById('searchClear').classList.remove('show');
         searchQuery = '';
-        renderNews(allArticlesCache);
-        document.getElementById('searchResultCount').textContent = allArticlesCache.length;
+        renderCurrentView();
         document.getElementById('searchInput').focus();
+    }
+
+    function getFilteredArticles() {
+        let articles = [];
+        
+        if (currentView === 'saved') {
+            articles = savedArticles;
+        } else {
+            articles = allArticlesCache;
+        }
+        
+        if (searchQuery) {
+            return articles.filter(article => {
+                const title = (article.title || '').toLowerCase();
+                const summary = (article.summary || '').toLowerCase();
+                const source = (article.source || '').toLowerCase();
+                const category = (article.category || '').toLowerCase();
+                return title.includes(searchQuery) || 
+                       summary.includes(searchQuery) || 
+                       source.includes(searchQuery) || 
+                       category.includes(searchQuery);
+            });
+        }
+        
+        return articles;
+    }
+
+    function renderCurrentView() {
+        const filtered = getFilteredArticles();
+        document.getElementById('searchResultCount').textContent = filtered.length;
+        
+        if (currentView === 'saved' && filtered.length === 0 && !searchQuery) {
+            const grid = document.getElementById('newsContent');
+            grid.innerHTML = `
+                <div class="no-results" style="grid-column:1/-1;">
+                    <span class="big-icon">⭐</span>
+                    <p>No saved articles yet</p>
+                    <p style="font-size:0.8em;color:var(--text-light);margin-top:4px;">Save articles by clicking the ☆ button on any news card</p>
+                </div>
+            `;
+            return;
+        }
+        
+        renderNews(filtered);
     }
 
     // ===== DARK MODE =====
@@ -345,7 +454,9 @@
             const catData = await categories.json();
             updateCategories(catData.categories);
             
-            renderNews(allArticles);
+            currentView = 'all';
+            renderCurrentView();
+            updateSavedUI();
         } catch (err) {
             grid.innerHTML = `
                 <div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;">
@@ -369,30 +480,40 @@
             btn.addEventListener('click', function() {
                 document.querySelectorAll('#categoryFilter button').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
+                currentView = 'all';
                 filterNews(this.dataset.category);
             });
             container.appendChild(btn);
         });
+        
+        // Add Saved tab
+        const savedBtn = document.createElement('button');
+        savedBtn.dataset.category = 'saved';
+        savedBtn.className = 'saved-tab';
+        savedBtn.innerHTML = `⭐ Saved <span class="count">${savedArticles.length}</span>`;
+        savedBtn.addEventListener('click', function() {
+            document.querySelectorAll('#categoryFilter button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentView = 'saved';
+            currentCategory = 'saved';
+            renderCurrentView();
+            updateSavedUI();
+        });
+        container.appendChild(savedBtn);
     }
 
     // ===== FILTER NEWS =====
     function filterNews(category) {
         currentCategory = category;
-        let articlesToShow = allArticles;
+        currentView = 'all';
         
-        if (category !== 'all') {
-            articlesToShow = articlesToShow.filter(article => article.category === category);
-        }
-        
-        allArticlesCache = articlesToShow;
-        document.getElementById('searchResultCount').textContent = articlesToShow.length;
-        
-        // If there's a search query, filter further
-        if (searchQuery) {
-            handleSearch(searchQuery);
+        if (category === 'all') {
+            allArticlesCache = allArticles;
         } else {
-            renderNews(articlesToShow);
+            allArticlesCache = allArticles.filter(article => article.category === category);
         }
+        
+        renderCurrentView();
     }
 
     // ===== RENDER NEWS =====
@@ -415,6 +536,7 @@
             const isFeatured = index === 0;
             const featuredClass = isFeatured ? 'featured' : '';
             const timeAgo = article.published ? timeSince(article.published) : '';
+            const saved = isSaved(article.link);
             
             let imageHtml = '';
             if (article.image) {
@@ -431,21 +553,36 @@
                 `<span class="read-time">⏱️ ${article.read_time} min read</span>` : '';
 
             // Highlight search term if present
-            let highlightedTitle = article.title;
+            let highlightedTitle = article.title || '';
             if (searchQuery) {
                 const regex = new RegExp(`(${searchQuery})`, 'gi');
-                highlightedTitle = article.title.replace(regex, '<mark style="background:#ff4a4a;color:#fff;padding:0 4px;border-radius:3px;">$1</mark>');
+                highlightedTitle = (article.title || '').replace(regex, '<mark style="background:#ff4a4a;color:#fff;padding:0 4px;border-radius:3px;">$1</mark>');
             }
 
             html += `
-                <div class="article-card ${featuredClass}">
-                    <div class="card-image">${imageHtml}</div>
+                <div class="article-card ${featuredClass}" data-link="${article.link}">
+                    <div class="card-image">
+                        ${imageHtml}
+                        ${saved ? `<div class="saved-badge"><span class="icon">⭐</span> Saved</div>` : ''}
+                    </div>
                     <div class="card-content">
                         <div class="tags">
                             <span class="source-tag">${article.source || 'News'}</span>
                             <span class="category-tag">${article.category || 'General'}</span>
                             ${article.rewritten ? '<span class="ai-badge">✨ AI</span>' : ''}
                             ${readTimeText}
+                            <span class="spacer"></span>
+                            <button class="save-btn ${saved ? 'saved' : ''}" data-link="${article.link}" onclick="toggleSave({
+                                title: '${article.title.replace(/'/g, "\\'")}',
+                                link: '${article.link}',
+                                source: '${article.source || 'News'}',
+                                category: '${article.category || 'General'}',
+                                summary: '${article.summary ? article.summary.replace(/'/g, "\\'") : ''}',
+                                image: '${article.image || ''}',
+                                read_time: ${article.read_time || 0}
+                            })">
+                                ${saved ? '⭐' : '☆'}
+                            </button>
                         </div>
                         <h2><a href="${article.link}" target="_blank">${highlightedTitle}</a></h2>
                         <div class="summary">${summaryHtml}</div>
@@ -460,9 +597,19 @@
         });
 
         grid.innerHTML = html;
+        updateSavedUI();
     }
 
     // ===== TIME AGO =====
+    function timeSince(dateString) {
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date)) return '';
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            const intervals = [
+                {label: 'year', seconds: 31536000},
+                {label: '    // ===== TIME AGO =====
     function timeSince(dateString) {
         try {
             const date = new Date(dateString);
