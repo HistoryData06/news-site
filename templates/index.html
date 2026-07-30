@@ -32,6 +32,8 @@
             --save-btn-bg: transparent;
             --save-btn-hover: rgba(255,74,74,0.1);
             --save-btn-active: #ff4a4a;
+            --trending-bg: rgba(255,74,74,0.05);
+            --trending-border: rgba(255,74,74,0.15);
         }
         body.dark-mode {
             --bg-body: #0d0d0d;
@@ -58,10 +60,28 @@
             --save-btn-bg: transparent;
             --save-btn-hover: rgba(255,74,74,0.15);
             --save-btn-active: #ff4a4a;
+            --trending-bg: rgba(255,74,74,0.08);
+            --trending-border: rgba(255,74,74,0.2);
         }
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
+        
+        /* ===== TRENDING TOPICS ===== */
+        .trending-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
+        .trending-container .trending-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+        .trending-container .trending-header .icon{font-size:1.3em}
+        .trending-container .trending-header h3{font-size:0.9em;font-weight:700;color:var(--text-primary);letter-spacing:0.5px}
+        .trending-container .trending-header h3 span{color:#ff4a4a}
+        .trending-container .trending-topics{display:flex;flex-wrap:wrap;gap:8px}
+        .trending-container .trending-topics .topic{background:var(--trending-bg);border:1px solid var(--trending-border);border-radius:20px;padding:6px 14px;font-size:0.75em;color:var(--text-secondary);cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;gap:6px;font-weight:500}
+        .trending-container .trending-topics .topic:hover{background:rgba(255,74,74,0.15);transform:translateY(-2px)}
+        .trending-container .trending-topics .topic .count{background:#ff4a4a;color:#fff;border-radius:50%;padding:0 6px;font-size:0.7em;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+        .trending-container .trending-topics .topic .emoji{font-size:0.9em}
+        .trending-container .trending-topics .topic.active{background:#ff4a4a;color:#fff;border-color:#ff4a4a}
+        .trending-container .trending-topics .topic.active .count{background:#fff;color:#ff4a4a}
+        .trending-container .trending-empty{color:var(--text-muted);font-size:0.8em;padding:8px 0;text-align:center}
+
         .search-container{background:var(--bg-card);border-radius:10px;padding:15px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .search-container .search-wrapper{display:flex;align-items:center;gap:12px;position:relative}
         .search-container .search-icon{font-size:1.2em;color:var(--text-muted)}
@@ -144,6 +164,8 @@
         .header .header-right .stats{font-size:0.65em;padding:4px 12px}
         .search-container{padding:12px 15px}
         .search-container input{font-size:0.85em;padding:8px 12px}
+        .trending-container{padding:14px 16px}
+        .trending-container .trending-topics .topic{font-size:0.65em;padding:4px 10px}
         .category-filter{padding:8px 12px;gap:4px;justify-content:center}
         .category-filter button{font-size:0.65em;padding:5px 12px}
         .article-card .card-image{height:160px}
@@ -160,7 +182,8 @@
         .news-grid{gap:15px}
         .search-container .search-wrapper{flex-wrap:wrap}
         .search-container .search-count{font-size:0.65em}
-        .article-card .card-content .save-btn{width:28px;height:28px;font-size:0.85em}}
+        .article-card .card-content .save-btn{width:28px;height:28px;font-size:0.85em}
+        .trending-container .trending-topics{gap:6px}}
     </style>
 </head>
 <body>
@@ -189,6 +212,16 @@
 </div>
 <!-- MAIN CONTAINER -->
 <div class="container">
+    <!-- ===== TRENDING TOPICS ===== -->
+    <div class="trending-container" id="trendingContainer">
+        <div class="trending-header">
+            <span class="icon">🔥</span>
+            <h3>Trending <span>Topics</span></h3>
+        </div>
+        <div class="trending-topics" id="trendingTopics">
+            <div class="trending-empty">Loading trending topics...</div>
+        </div>
+    </div>
     <!-- SEARCH BAR -->
     <div class="search-container">
         <div class="search-wrapper">
@@ -210,7 +243,85 @@
     <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
     <div class="footer"><span class="heart">❤</span> NewsPro • All sources credited</div>
 </div>
-<script>    // ===== SAVE ARTICLES =====
+<script>    // ===== TRENDING TOPICS =====
+    let trendingTopics = [];
+    let selectedTrending = null;
+
+    function extractTrendingTopics(articles) {
+        const topicMap = {};
+        const stopWords = ['the', 'a', 'an', 'of', 'for', 'on', 'at', 'to', 'in', 'with', 'without', 'and', 'but', 'or', 'yet', 'so', 'as', 'by', 'from', 'into', 'through', 'during', 'including', 'after', 'before', 'when', 'where', 'who', 'which', 'that', 'this', 'these', 'those', 'then', 'than', 'would', 'could', 'should', 'may', 'might', 'will', 'shall', 'have', 'has', 'had', 'do', 'does', 'did', 'more', 'most', 'some', 'any', 'no', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just', 'but', 'also', 'etc', 'etc.', 'vs', 'vs.', '&'];
+        
+        articles.forEach(article => {
+            const title = article.title || '';
+            const words = title.split(' ');
+            // Extract keywords (skip stop words and short words)
+            const keywords = words.filter(w => w.length > 3 && !stopWords.includes(w.toLowerCase()));
+            keywords.forEach(word => {
+                const clean = word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                if (clean.length > 2) {
+                    topicMap[clean] = (topicMap[clean] || 0) + 1;
+                }
+            });
+        });
+        
+        // Sort by frequency and get top 10
+        const sorted = Object.entries(topicMap)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10);
+        
+        trendingTopics = sorted.map(([word, count]) => ({
+            word: word,
+            count: count,
+            display: word.charAt(0).toUpperCase() + word.slice(1)
+        }));
+        
+        return trendingTopics;
+    }
+
+    function renderTrendingTopics(topics) {
+        const container = document.getElementById('trendingTopics');
+        if (!topics || topics.length === 0) {
+            container.innerHTML = '<div class="trending-empty">No trending topics yet</div>';
+            return;
+        }
+        
+        const emojis = ['🔥', '💥', '⭐', '🚀', '📈', '⚡', '🎯', '💡', '🌟', '💪'];
+        let html = '';
+        topics.forEach((topic, index) => {
+            const emoji = emojis[index % emojis.length];
+            const isActive = selectedTrending === topic.word;
+            html += `
+                <div class="topic ${isActive ? 'active' : ''}" onclick="filterByTrending('${topic.word}')">
+                    <span class="emoji">${emoji}</span>
+                    ${topic.display}
+                    <span class="count">${topic.count}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function filterByTrending(word) {
+        if (selectedTrending === word) {
+            selectedTrending = null;
+            // Clear search and show all
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('searchClear').classList.remove('show');
+            renderCurrentView();
+            renderTrendingTopics(trendingTopics);
+            return;
+        }
+        
+        selectedTrending = word;
+        document.getElementById('searchInput').value = word;
+        searchQuery = word;
+        document.getElementById('searchClear').classList.add('show');
+        renderCurrentView();
+        renderTrendingTopics(trendingTopics);
+    }
+
+    // ===== SAVE ARTICLES =====
     let savedArticles = JSON.parse(localStorage.getItem('newsProSaved') || '[]');
 
     function toggleSave(article) {
@@ -277,13 +388,25 @@
             clearBtn.classList.remove('show');
         }
         renderCurrentView();
+        // Update trending highlight
+        if (selectedTrending) {
+            const topics = document.querySelectorAll('.trending-topics .topic');
+            topics.forEach(t => {
+                t.classList.remove('active');
+                if (t.textContent.toLowerCase().includes(selectedTrending)) {
+                    t.classList.add('active');
+                }
+            });
+        }
     }
 
     function clearSearch() {
         document.getElementById('searchInput').value = '';
         document.getElementById('searchClear').classList.remove('show');
         searchQuery = '';
+        selectedTrending = null;
         renderCurrentView();
+        renderTrendingTopics(trendingTopics);
         document.getElementById('searchInput').focus();
     }
 
@@ -384,6 +507,11 @@
             allArticlesCache = allArticles;
             document.getElementById('articleCount').textContent = data.total || 0;
             document.getElementById('searchResultCount').textContent = data.total || 0;
+            
+                        // ===== EXTRACT TRENDING TOPICS =====
+            const topics = extractTrendingTopics(allArticles);
+            renderTrendingTopics(topics);
+            
             const categories = await fetch('/api/categories');
             const catData = await categories.json();
             updateCategories(catData.categories);
@@ -442,7 +570,9 @@
             allArticlesCache = allArticles.filter(article => article.category === category);
         }
         renderCurrentView();
-    }    // ===== RENDER NEWS =====
+    }
+
+    // ===== RENDER NEWS =====
     function renderNews(articles) {
         const grid = document.getElementById('newsContent');
         if (!articles || articles.length === 0) {
