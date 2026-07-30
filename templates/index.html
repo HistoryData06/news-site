@@ -73,7 +73,7 @@
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
         
-        /* ===== LIVE UPDATE BANNER ===== */
+        /* ===== LIVE BANNER ===== */
         .live-banner{background:var(--live-bg);color:var(--live-text);padding:8px 20px;display:none;align-items:center;gap:15px;position:sticky;top:0;z-index:999;box-shadow:0 2px 15px rgba(204,0,0,0.3);transition:all 0.3s ease}
         .live-banner.show{display:flex}
         .live-banner .live-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse-dot 1s ease-in-out infinite;flex-shrink:0}
@@ -84,12 +84,9 @@
         .live-banner .live-count{background:rgba(255,255,255,0.15);padding:2px 12px;border-radius:20px;font-size:0.7em;font-weight:700;white-space:nowrap}
         .live-banner .live-close{background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:1.2em;cursor:pointer;padding:0 8px;border-radius:20px;transition:background 0.3s ease;font-weight:700}
         .live-banner .live-close:hover{background:rgba(255,255,255,0.2)}
-        
-        /* ===== LIVE INDICATOR IN HEADER ===== */
         .live-indicator{display:none;align-items:center;gap:6px;background:rgba(204,0,0,0.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(204,0,0,0.2);font-size:0.7em;color:#cc0000;font-weight:600}
         .live-indicator .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cc0000;animation:pulse-dot 1s ease-in-out infinite}
         .live-indicator.active{display:flex}
-
         .trending-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .trending-container .trending-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
         .trending-container .trending-header .icon{font-size:1.3em}
@@ -106,7 +103,6 @@
         .trending-container .trending-topics .topic.active{background:#ff4a4a;color:#fff;border-color:#ff4a4a}
         .trending-container .trending-topics .topic.active .count{background:#fff;color:#ff4a4a}
         .trending-container .trending-empty{color:var(--text-muted);font-size:0.8em;padding:8px 0;text-align:center}
-        
         .search-container{background:var(--bg-card);border-radius:10px;padding:15px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .search-container .search-wrapper{display:flex;align-items:center;gap:12px;position:relative}
         .search-container .search-icon{font-size:1.2em;color:var(--text-muted)}
@@ -353,7 +349,6 @@
                 const newCount = newArticles.length - previousArticles.length;
                 showLiveBanner(newArticles, newCount);
                 
-                // Update the dot animation
                 const dot = document.getElementById('updateDot');
                 const status = document.getElementById('updateStatus');
                 dot.classList.add('updating');
@@ -381,16 +376,7 @@
             text.innerHTML = `${latest.title} <a href="${latest.link}" target="_blank">Read more →</a>`;
             countEl.textContent = `${count} new`;
             banner.classList.add('show');
-            
-            // Also show live indicator in header
             document.getElementById('liveIndicator').classList.add('active');
-            
-            // Auto-hide after 10 seconds if user doesn't close
-            setTimeout(() => {
-                if (banner.classList.contains('show')) {
-                    // Only hide if not manually closed
-                }
-            }, 10000);
         }
     }
 
@@ -399,7 +385,6 @@
         document.getElementById('liveIndicator').classList.remove('active');
     }
 
-    // Toggle live updates (user can enable/disable)
     function toggleLiveUpdates() {
         isLiveEnabled = !isLiveEnabled;
         const status = document.getElementById('updateStatus');
@@ -723,7 +708,7 @@
             const data = await response.json();
             allArticles = data.articles || [];
             allArticlesCache = allArticles;
-            previousArticles = allArticles; // Store for live updates
+            previousArticles = allArticles;
             
             document.getElementById('articleCount').textContent = data.total || 0;
             document.getElementById('searchResultCount').textContent = data.total || 0;
@@ -740,7 +725,6 @@
             
             document.getElementById('relatedList').innerHTML = '<div class="related-empty">Click any article to see related news</div>';
             
-            // Start live updates after loading
             startLiveUpdates();
         } catch (err) {
             grid.innerHTML = `
@@ -782,9 +766,7 @@
             updateSavedUI();
         });
         container.appendChild(savedBtn);
-    }
-
-    // ===== FILTER NEWS =====
+    }    // ===== FILTER NEWS =====
     function filterNews(category) {
         currentCategory = category;
         currentView = 'all';
