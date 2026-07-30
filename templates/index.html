@@ -3,64 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>📰 News Today</title>
+    <title>📰 News Pro</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:Arial,sans-serif;background:#000;min-height:100vh;padding:20px;color:#fff}
-        .container{max-width:800px;margin:0 auto;padding:10px 0 30px}
+        body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:#f0f2f5;min-height:100vh;padding:0;color:#222}
+        .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
 
-        .header{text-align:center;padding:30px 20px 25px;margin-bottom:30px;border-bottom:3px solid #FFD700}
-        .header h1{font-size:2.2em;font-weight:900;letter-spacing:6px;color:#FFD700;text-transform:uppercase}
-        .header .subtitle{color:#888;font-size:0.85em;letter-spacing:2px;margin-top:8px}
-        .header .stats{color:#555;font-size:0.75em;margin-top:6px}
+        /* ===== HEADER ===== */
+        .header{background:linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);padding:25px 30px;border-radius:12px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+        .header-left{display:flex;align-items:center;gap:12px}
+        .header-left .logo{font-size:2em;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1}
+        .header-left .logo span{color:#ff4a4a}
+        .header-left .subtitle{color:#aaa;font-size:0.75em;font-weight:300;letter-spacing:3px;display:block}
+        .header-right{display:flex;align-items:center;gap:15px}
+        .header-right .stats{color:#aaa;font-size:0.75em;background:rgba(255,255,255,0.05);padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.05)}
+        .header-right .stats span{color:#fff;font-weight:700}
 
-        .category-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;justify-content:center}
-        .category-filter button{padding:8px 18px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:20px;color:#888;cursor:pointer;transition:all .3s ease;font-size:0.8em}
-        .category-filter button.active{background:rgba(255,215,0,0.15);border-color:#FFD700;color:#FFD700}
-        .category-filter button:hover{background:rgba(255,215,0,0.1)}
+        /* ===== CATEGORIES ===== */
+        .category-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:30px;background:#fff;padding:10px 15px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.04);border:1px solid #eee}
+        .category-filter button{padding:8px 18px;background:transparent;border:1px solid #eee;border-radius:30px;color:#888;cursor:pointer;transition:all .25s ease;font-size:0.8em;font-weight:600;letter-spacing:0.3px}
+        .category-filter button:hover{background:#f5f5f5;color:#222}
+        .category-filter button.active{background:#ff4a4a;border-color:#ff4a4a;color:#fff;box-shadow:0 2px 10px rgba(255,74,74,0.2)}
 
-        .article-card{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:18px;border:1px solid rgba(255,215,0,0.08);transition:all .3s ease}
-        .article-card:hover{border-color:rgba(255,215,0,0.2);transform:translateY(-2px)}
-        .article-card .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:#FFD700;background:rgba(255,215,0,0.1);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-        .article-card .category-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:700;color:#888;background:rgba(255,255,255,0.05);margin-left:6px;text-transform:uppercase;letter-spacing:1px}
-        .article-card .ai-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.55em;font-weight:700;color:#000;background:#FFD700;margin-left:6px;text-transform:uppercase;letter-spacing:1px}
-        .article-card h2{color:#fff;font-size:1.1em;margin-bottom:8px;line-height:1.4}
-        .article-card h2 a{color:#fff;text-decoration:none;transition:color .3s ease}
-        .article-card h2 a:hover{color:#FFD700}
-        .article-card .summary{color:#aaa;font-size:0.9em;line-height:1.6;margin-bottom:10px}
-        .article-card .summary .ai-label{color:#FFD700;font-size:0.7em}
-        .article-card .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.75em;color:#666}
-        .article-card .meta .source{color:#888}
-        .article-card .meta .time{color:#555}
-        .article-card .read-more{color:#FFD700;text-decoration:none;font-weight:600;transition:all .3s ease}
-        .article-card .read-more:hover{text-decoration:underline}
-        .article-card .article-image{margin-bottom:12px;border-radius:8px;overflow:hidden;max-height:200px;background:#1a1a1a}
-        .article-card .article-image img{width:100%;height:auto;max-height:200px;object-fit:cover}
+        /* ===== ARTICLE CARD ===== */
+        .article-card{background:#fff;border-radius:12px;padding:0;margin-bottom:25px;border:1px solid #eee;transition:all .3s ease;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+        .article-card:hover{box-shadow:0 8px 35px rgba(0,0,0,0.07);transform:translateY(-3px);border-color:#ddd}
+        .article-card .card-inner{display:flex;flex-direction:column;padding:22px 25px}
+        @media(min-width:768px){.article-card .card-inner{flex-direction:row;gap:25px;align-items:flex-start;padding:25px 30px}
+        .article-card .card-image{flex:0 0 280px;max-height:200px;border-radius:8px;overflow:hidden;margin-bottom:0}
+        .article-card .card-image img{width:100%;height:100%;object-fit:cover;display:block}}
+        .article-card .card-image{flex:0 0 100%;max-height:240px;border-radius:8px 8px 0 0;overflow:hidden;background:#f5f5f5;position:relative}
+        .article-card .card-image img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .3s ease}
+        .article-card:hover .card-image img{transform:scale(1.02)}
+        .article-card .card-content{flex:1;min-width:0}
+        .article-card .card-content .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+        .article-card .card-content .source-tag{display:inline-block;padding:2px 14px;border-radius:20px;font-size:0.6em;font-weight:700;color:#ff4a4a;background:#fff0f0;text-transform:uppercase;letter-spacing:1px;border:1px solid #ffe0e0}
+        .article-card .card-content .category-tag{display:inline-block;padding:2px 14px;border-radius:20px;font-size:0.55em;font-weight:600;color:#888;background:#f5f5f5;text-transform:uppercase;letter-spacing:0.5px}
+        .article-card .card-content .ai-badge{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:700;color:#fff;background:#ff4a4a;text-transform:uppercase;letter-spacing:1px}
+        .article-card .card-content h2{font-size:1.25em;font-weight:700;margin-bottom:8px;line-height:1.4}
+        .article-card .card-content h2 a{color:#1a1a1a;text-decoration:none;transition:color .2s}
+        .article-card .card-content h2 a:hover{color:#ff4a4a}
+        .article-card .card-content .summary{color:#555;font-size:0.92em;line-height:1.7;margin-bottom:12px}
+        .article-card .card-content .summary .ai-label{color:#ff4a4a;font-weight:600;font-size:0.8em}
+        .article-card .card-content .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.75em;color:#999;border-top:1px solid #f0f0f0;padding-top:12px;margin-top:4px}
+        .article-card .card-content .meta .source{color:#777;font-weight:500}
+        .article-card .card-content .meta .source i{margin-right:4px}
+        .article-card .card-content .meta .time{color:#aaa}
+        .article-card .card-content .read-more{color:#ff4a4a;text-decoration:none;font-weight:700;transition:all .2s;font-size:0.85em;letter-spacing:0.3px}
+        .article-card .card-content .read-more:hover{color:#cc0000;text-decoration:underline}
 
-        .loading-state{text-align:center;padding:50px 20px;color:#666}
-        .spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(255,215,0,0.08);border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+        /* ===== LOADING ===== */
+        .loading-state{text-align:center;padding:60px 20px;color:#999}
+        .spinner{display:inline-block;width:40px;height:40px;border:3px solid #f0f0f0;border-top:3px solid #ff4a4a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
         @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
-        .refresh-btn{display:block;width:100%;padding:16px;background:#FFD700;border:none;border-radius:50px;color:#000;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:4px;margin-top:10px;transition:all .3s ease}
-        .refresh-btn:hover{background:#FFE44D;transform:translateY(-2px)}
+        /* ===== REFRESH BUTTON ===== */
+        .refresh-btn{display:block;width:100%;max-width:280px;margin:30px auto 0;padding:14px 30px;background:#ff4a4a;border:none;border-radius:50px;color:#fff;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:2px;transition:all .3s ease;font-size:0.85em;box-shadow:0 4px 15px rgba(255,74,74,0.25)}
+        .refresh-btn:hover{background:#cc0000;transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,74,74,0.3)}
 
-        .footer{text-align:center;color:#333;font-size:.7em;padding:30px 0 10px;border-top:1px solid rgba(255,215,0,0.04);margin-top:20px}
+        /* ===== FOOTER ===== */
+        .footer{text-align:center;color:#bbb;font-size:.7em;padding:35px 0 10px;border-top:1px solid #eaeaea;margin-top:30px}
+        .footer .heart{color:#ff4a4a}
 
-        @media(max-width:480px){body{padding:12px}.header h1{font-size:1.6em}.category-filter{gap:5px}.category-filter button{font-size:0.65em;padding:5px 12px}.article-card{padding:14px}.article-card h2{font-size:0.95em}}
+        /* ===== RESPONSIVE ===== */
+        @media(max-width:767px){.container{padding:15px 12px 30px}
+        .header{padding:20px;flex-direction:column;text-align:center}
+        .header-left .logo{font-size:1.6em}
+        .header-right .stats{font-size:0.65em;padding:4px 12px}
+        .category-filter{padding:8px 12px;gap:5px;justify-content:center}
+        .category-filter button{font-size:0.65em;padding:5px 12px}
+        .article-card .card-inner{padding:16px 18px}
+        .article-card .card-content h2{font-size:1em}
+        .article-card .card-content .summary{font-size:0.85em}
+        .article-card .card-image{max-height:180px}
+        .article-card .card-image img{height:160px}
+        .refresh-btn{max-width:100%}}
+        @media(max-width:480px){.header .logo{font-size:1.3em}
+        .header .subtitle{font-size:0.6em}
+        .article-card .card-image{max-height:150px}
+        .article-card .card-image img{height:140px}}
     </style>
 </head>
 <body>
 <div class="container">
+    <!-- HEADER -->
     <div class="header">
-        <h1>📰 News Today</h1>
-        <div class="subtitle">Latest headlines from around the world</div>
-        <div class="stats" id="stats">Loading...</div>
+        <div class="header-left">
+            <div>
+                <div class="logo">📰 <span>News</span>Pro</div>
+                <span class="subtitle">✦ Breaking Stories • Global Coverage ✦</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="stats"><span id="articleCount">0</span> articles</div>
+        </div>
     </div>
 
+    <!-- CATEGORIES -->
     <div class="category-filter" id="categoryFilter">
         <button class="active" data-category="all">All</button>
     </div>
 
+    <!-- NEWS CONTENT -->
     <div id="newsContent">
         <div class="loading-state">
             <div class="spinner"></div>
@@ -68,9 +112,12 @@
         </div>
     </div>
 
+    <!-- REFRESH -->
     <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
 
-    <div class="footer">📰 News from multiple sources • Updated automatically</div>
+    <div class="footer">
+        <span class="heart">❤</span> NewsPro • All sources credited
+    </div>
 </div>
 
 <script>
@@ -86,7 +133,7 @@
             const data = await response.json();
             allArticles = data.articles || [];
             
-            document.getElementById('stats').textContent = `📊 ${data.total} articles from ${data.sources} sources ${data.ai_rewrite_enabled ? '✨ AI Rewritten' : ''}`;
+            document.getElementById('articleCount').textContent = data.total || 0;
             
             const categories = await fetch('/api/categories');
             const catData = await categories.json();
@@ -95,10 +142,10 @@
             renderNews(allArticles);
         } catch (err) {
             content.innerHTML = `
-                <div class="article-card" style="text-align:center;padding:40px;">
-                    <p style="color:#ff6b6b;">❌ Error loading news</p>
-                    <p style="color:#666;font-size:0.9em;">${err.message}</p>
-                    <button onclick="loadNews()" style="margin-top:12px;padding:8px 20px;background:#FFD700;border:none;border-radius:6px;color:#000;font-weight:bold;cursor:pointer;">Retry</button>
+                <div class="article-card" style="text-align:center;padding:40px 20px;">
+                    <p style="color:#ff4a4a;font-weight:600;">❌ Error loading news</p>
+                    <p style="color:#999;font-size:0.9em;margin-top:8px;">${err.message}</p>
+                    <button onclick="loadNews()" style="margin-top:15px;padding:10px 25px;background:#ff4a4a;border:none;border-radius:30px;color:#fff;font-weight:600;cursor:pointer;">Retry</button>
                 </div>
             `;
         }
@@ -137,7 +184,7 @@
         const content = document.getElementById('newsContent');
         
         if (!articles || articles.length === 0) {
-            content.innerHTML = `<div class="article-card" style="text-align:center;padding:40px;"><p style="color:#666;">📭 No articles found</p></div>`;
+            content.innerHTML = `<div class="article-card" style="text-align:center;padding:40px 20px;"><p style="color:#999;">📭 No articles found</p></div>`;
             return;
         }
 
@@ -145,7 +192,7 @@
         articles.forEach(article => {
             const timeAgo = article.published ? timeSince(article.published) : '';
             const imageHtml = article.image ? 
-                `<div class="article-image"><img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.style.display='none'"></div>` : '';
+                `<div class="card-image"><img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.style.display='none'"></div>` : '';
 
             const summaryHtml = article.rewritten ? 
                 `<span class="ai-label">✨ AI Rewritten:</span> ${article.summary}` : 
@@ -153,25 +200,28 @@
 
             html += `
                 <div class="article-card">
-                    <div>
-                        <span class="source-tag">${article.source || 'News'}</span>
-                        <span class="category-tag">${article.category || 'General'}</span>
-                        ${article.rewritten ? '<span class="ai-badge">✨ AI</span>' : ''}
-                    </div>
-                    ${imageHtml}
-                    <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
-                    <div class="summary">${summaryHtml}</div>
-                    <div class="meta">
-                        <span class="source">📰 ${article.source || 'Unknown'}</span>
-                        <span class="time">${timeAgo}</span>
-                        <a href="${article.link}" target="_blank" class="read-more">Read full article →</a>
+                    <div class="card-inner">
+                        ${imageHtml}
+                        <div class="card-content">
+                            <div class="tags">
+                                <span class="source-tag">${article.source || 'News'}</span>
+                                <span class="category-tag">${article.category || 'General'}</span>
+                                ${article.rewritten ? '<span class="ai-badge">✨ AI</span>' : ''}
+                            </div>
+                            <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
+                            <div class="summary">${summaryHtml}</div>
+                            <div class="meta">
+                                <span class="source"><i>📰</i> ${article.source || 'Unknown'}</span>
+                                <span class="time">${timeAgo}</span>
+                                <a href="${article.link}" target="_blank" class="read-more">Read full article →</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
         });
 
         content.innerHTML = html;
-        document.querySelector('.footer').textContent = `📰 ${articles.length} articles • Updated automatically`;
     }
 
     function timeSince(dateString) {
