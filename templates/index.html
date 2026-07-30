@@ -5,32 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>📰 News Pro</title>
     <style>
+        /* ===== CSS VARIABLES FOR THEMING ===== */
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-topbar: #1a1a1a;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --text-muted: #999999;
+            --text-light: #aaaaaa;
+            --border-color: #eeeeee;
+            --shadow-color: rgba(0,0,0,0.05);
+            --shadow-hover: rgba(0,0,0,0.1);
+            --tag-bg: #f5f5f5;
+            --tag-text: #888888;
+            --ai-bg: #ff4a4a;
+            --ai-text: #ffffff;
+            --read-time-bg: #f0f0f0;
+            --read-time-text: #888888;
+            --source-tag-bg: #fff0f0;
+            --source-tag-text: #ff4a4a;
+        }
+
+        /* ===== DARK MODE VARIABLES ===== */
+        body.dark-mode {
+            --bg-body: #0d0d0d;
+            --bg-card: #1a1a1a;
+            --bg-header: #1a1a1a;
+            --bg-topbar: #0d0d0d;
+            --text-primary: #e8e8e8;
+            --text-secondary: #bbbbbb;
+            --text-muted: #777777;
+            --text-light: #555555;
+            --border-color: #2a2a2a;
+            --shadow-color: rgba(0,0,0,0.3);
+            --shadow-hover: rgba(0,0,0,0.5);
+            --tag-bg: #2a2a2a;
+            --tag-text: #aaaaaa;
+            --read-time-bg: #2a2a2a;
+            --read-time-text: #aaaaaa;
+            --source-tag-bg: #2a1a1a;
+            --source-tag-text: #ff6a6a;
+        }
+
         /* ===== RESET & BASE ===== */
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:#f0f2f5;min-height:100vh;padding:0;color:#222}
+        body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
 
         /* ===== TOP BAR ===== */
-        .top-bar{background:#1a1a1a;color:#aaa;padding:8px 0;font-size:0.7em;border-bottom:1px solid #333;display:block}
+        .top-bar{background:var(--bg-topbar);color:#aaa;padding:8px 0;font-size:0.7em;border-bottom:1px solid #333;display:block;transition:background 0.3s ease}
         .top-bar .inner{max-width:1100px;margin:0 auto;padding:0 15px;display:flex;justify-content:space-between;align-items:center}
         .top-bar .inner a{color:#aaa;text-decoration:none;margin-left:15px;transition:color .2s}
         .top-bar .inner a:hover{color:#fff}
         .top-bar .inner .date{color:#888}
 
         /* ===== HEADER ===== */
-        .header{background:#fff;padding:20px 0;border-bottom:3px solid #ff4a4a;margin-bottom:30px;box-shadow:0 2px 10px rgba(0,0,0,0.03)}
+        .header{background:var(--bg-header);padding:20px 0;border-bottom:3px solid #ff4a4a;margin-bottom:30px;box-shadow:0 2px 10px var(--shadow-color);transition:background 0.3s ease, box-shadow 0.3s ease}
         .header .inner{max-width:1100px;margin:0 auto;padding:0 15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
-        .header .logo{font-size:2.2em;font-weight:900;color:#1a1a1a;letter-spacing:-1px}
+        .header .logo{font-size:2.2em;font-weight:900;color:var(--text-primary);letter-spacing:-1px;transition:color 0.3s ease}
         .header .logo span{color:#ff4a4a}
-        .header .subtitle{color:#999;font-size:0.7em;font-weight:300;letter-spacing:3px;margin-top:2px}
-        .header .header-right{display:flex;align-items:center;gap:20px}
-        .header .header-right .stats{color:#888;font-size:0.75em;background:#f5f5f5;padding:6px 16px;border-radius:20px;border:1px solid #eee}
-        .header .header-right .stats span{color:#1a1a1a;font-weight:700}
+        .header .subtitle{color:var(--text-muted);font-size:0.7em;font-weight:300;letter-spacing:3px;margin-top:2px;transition:color 0.3s ease}
+        .header .header-right{display:flex;align-items:center;gap:15px}
+        .header .header-right .stats{color:var(--text-muted);font-size:0.75em;background:var(--tag-bg);padding:6px 16px;border-radius:20px;border:1px solid var(--border-color);transition:all 0.3s ease}
+        .header .header-right .stats span{color:var(--text-primary);font-weight:700;transition:color 0.3s ease}
+
+        /* ===== DARK MODE TOGGLE ===== */
+        .theme-toggle{background:var(--tag-bg);border:1px solid var(--border-color);border-radius:30px;padding:6px 14px;cursor:pointer;font-size:1.1em;transition:all 0.3s ease;color:var(--text-primary);display:flex;align-items:center;gap:8px}
+        .theme-toggle:hover{transform:scale(1.05)}
+        .theme-toggle .icon{font-size:1.2em}
+        .theme-toggle .label{font-size:0.7em;font-weight:600}
 
         /* ===== CATEGORIES ===== */
-        .category-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:30px;background:#fff;padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);border:1px solid #eee}
-        .category-filter button{padding:8px 18px;background:transparent;border:none;border-radius:30px;color:#888;cursor:pointer;transition:all .25s ease;font-size:0.8em;font-weight:600}
-        .category-filter button:hover{background:#f5f5f5;color:#222}
+        .category-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:30px;background:var(--bg-card);padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px var(--shadow-color);border:1px solid var(--border-color);transition:all 0.3s ease}
+        .category-filter button{padding:8px 18px;background:transparent;border:none;border-radius:30px;color:var(--text-muted);cursor:pointer;transition:all .25s ease;font-size:0.8em;font-weight:600}
+        .category-filter button:hover{background:var(--tag-bg);color:var(--text-primary)}
         .category-filter button.active{background:#ff4a4a;color:#fff;box-shadow:0 2px 10px rgba(255,74,74,0.2)}
 
         /* ===== NEWS GRID ===== */
@@ -41,32 +91,32 @@
         .news-grid .featured{grid-column:1 / -1}}
 
         /* ===== ARTICLE CARD ===== */
-        .article-card{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #eee;transition:all .3s ease;box-shadow:0 2px 8px rgba(0,0,0,0.02)}
-        .article-card:hover{box-shadow:0 8px 30px rgba(0,0,0,0.07);transform:translateY(-4px);border-color:#ddd}
+        .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color)}
+        .article-card:hover{box-shadow:0 8px 30px var(--shadow-hover);transform:translateY(-4px);border-color:var(--text-light)}
         .article-card .card-image{width:100%;height:200px;overflow:hidden;background:#1a1a1a;position:relative}
         .article-card .card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
         .article-card:hover .card-image img{transform:scale(1.03)}
         .article-card .card-image .no-image{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555;font-size:2.5em;background:#1a1a1a}
         .article-card .card-content{padding:18px 20px 20px}
         .article-card .card-content .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
-        .article-card .card-content .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:#ff4a4a;background:#fff0f0;text-transform:uppercase;letter-spacing:0.5px}
-        .article-card .card-content .category-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:600;color:#888;background:#f5f5f5;text-transform:uppercase;letter-spacing:0.5px}
-        .article-card .card-content .ai-badge{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:700;color:#fff;background:#ff4a4a;text-transform:uppercase;letter-spacing:0.5px}
-        .article-card .card-content .read-time{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:600;color:#888;background:#f0f0f0;margin-left:4px}
+        .article-card .card-content .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:var(--source-tag-text);background:var(--source-tag-bg);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.3s ease}
+        .article-card .card-content .category-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:600;color:var(--tag-text);background:var(--tag-bg);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.3s ease}
+        .article-card .card-content .ai-badge{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:700;color:var(--ai-text);background:var(--ai-bg);text-transform:uppercase;letter-spacing:0.5px}
+        .article-card .card-content .read-time{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:600;color:var(--read-time-text);background:var(--read-time-bg);margin-left:4px;transition:all 0.3s ease}
         .article-card .card-content h2{font-size:1.15em;font-weight:700;margin-bottom:8px;line-height:1.4}
-        .article-card .card-content h2 a{color:#1a1a1a;text-decoration:none;transition:color .2s}
+        .article-card .card-content h2 a{color:var(--text-primary);text-decoration:none;transition:color .2s}
         .article-card .card-content h2 a:hover{color:#ff4a4a}
-        .article-card .card-content .summary{color:#555;font-size:0.9em;line-height:1.7;margin-bottom:12px}
+        .article-card .card-content .summary{color:var(--text-secondary);font-size:0.9em;line-height:1.7;margin-bottom:12px;transition:color 0.3s ease}
         .article-card .card-content .summary .ai-label{color:#ff4a4a;font-weight:600;font-size:0.8em}
-        .article-card .card-content .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.7em;color:#999;border-top:1px solid #f0f0f0;padding-top:12px;margin-top:4px}
-        .article-card .card-content .meta .source{color:#777}
-        .article-card .card-content .meta .time{color:#aaa}
+        .article-card .card-content .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.7em;color:var(--text-muted);border-top:1px solid var(--border-color);padding-top:12px;margin-top:4px;transition:all 0.3s ease}
+        .article-card .card-content .meta .source{color:var(--text-muted)}
+        .article-card .card-content .meta .time{color:var(--text-light)}
         .article-card .card-content .read-more{color:#ff4a4a;text-decoration:none;font-weight:700;transition:all .2s;font-size:0.8em}
         .article-card .card-content .read-more:hover{color:#cc0000;text-decoration:underline}
 
         /* ===== LOADING ===== */
-        .loading-state{text-align:center;padding:60px 20px;color:#999;grid-column:1 / -1}
-        .spinner{display:inline-block;width:40px;height:40px;border:3px solid #f0f0f0;border-top:3px solid #ff4a4a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+        .loading-state{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1 / -1;transition:color 0.3s ease}
+        .spinner{display:inline-block;width:40px;height:40px;border:3px solid var(--border-color);border-top:3px solid #ff4a4a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;transition:border-color 0.3s ease}
         @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
         /* ===== REFRESH ===== */
@@ -74,7 +124,7 @@
         .refresh-btn:hover{background:#cc0000;transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,74,74,0.3)}
 
         /* ===== FOOTER ===== */
-        .footer{text-align:center;color:#bbb;font-size:.7em;padding:35px 0 10px;border-top:1px solid #eaeaea;margin-top:30px}
+        .footer{text-align:center;color:var(--text-light);font-size:.7em;padding:35px 0 10px;border-top:1px solid var(--border-color);margin-top:30px;transition:all 0.3s ease}
         .footer .heart{color:#ff4a4a}
 
         /* ===== RESPONSIVE ===== */
@@ -88,7 +138,10 @@
         .article-card .card-content{padding:14px 16px 16px}
         .article-card .card-content h2{font-size:1em}
         .article-card .card-content .summary{font-size:0.85em}
-        .refresh-btn{max-width:100%}}
+        .refresh-btn{max-width:100%}
+        .header .header-right{gap:10px}
+        .theme-toggle{padding:4px 10px;font-size:0.9em}
+        .theme-toggle .label{display:none}}
         @media(max-width:480px){.header .logo{font-size:1.3em}
         .header .subtitle{font-size:0.6em}
         .article-card .card-image{height:140px}
@@ -117,6 +170,10 @@
         </div>
         <div class="header-right">
             <div class="stats"><span id="articleCount">0</span> articles</div>
+            <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+                <span class="icon">🌙</span>
+                <span class="label">Dark</span>
+            </button>
         </div>
     </div>
 </div>
@@ -145,6 +202,45 @@
 </div>
 
 <script>
+    // ===== DARK MODE =====
+    function toggleTheme() {
+        const body = document.body;
+        const toggle = document.getElementById('themeToggle');
+        const icon = toggle.querySelector('.icon');
+        const label = toggle.querySelector('.label');
+        
+        body.classList.toggle('dark-mode');
+        
+        if (body.classList.contains('dark-mode')) {
+            icon.textContent = '☀️';
+            label.textContent = 'Light';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            icon.textContent = '🌙';
+            label.textContent = 'Dark';
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Load saved theme preference
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const body = document.body;
+        const toggle = document.getElementById('themeToggle');
+        const icon = toggle.querySelector('.icon');
+        const label = toggle.querySelector('.label');
+        
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            icon.textContent = '☀️';
+            label.textContent = 'Light';
+        } else {
+            body.classList.remove('dark-mode');
+            icon.textContent = '🌙';
+            label.textContent = 'Dark';
+        }
+    }
+
     // ===== STATE =====
     let currentCategory = 'all';
     let allArticles = [];
@@ -178,7 +274,7 @@
             grid.innerHTML = `
                 <div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;">
                     <p style="color:#ff4a4a;font-weight:600;">❌ Error loading news</p>
-                    <p style="color:#999;font-size:0.9em;margin-top:8px;">${err.message}</p>
+                    <p style="color:var(--text-muted);font-size:0.9em;margin-top:8px;">${err.message}</p>
                     <button onclick="loadNews()" style="margin-top:15px;padding:10px 25px;background:#ff4a4a;border:none;border-radius:30px;color:#fff;font-weight:600;cursor:pointer;">Retry</button>
                 </div>
             `;
@@ -221,7 +317,7 @@
         const grid = document.getElementById('newsContent');
         
         if (!articles || articles.length === 0) {
-            grid.innerHTML = `<div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;"><p style="color:#999;">📭 No articles found</p></div>`;
+            grid.innerHTML = `<div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;"><p style="color:var(--text-muted);">📭 No articles found</p></div>`;
             return;
         }
 
@@ -242,7 +338,6 @@
                 `<span class="ai-label">✨ AI Rewritten:</span> ${article.summary}` : 
                 article.summary;
 
-            // ===== READ TIME DISPLAY =====
             const readTimeText = article.read_time ? 
                 `<span class="read-time">⏱️ ${article.read_time} min read</span>` : '';
 
@@ -299,7 +394,10 @@
     }
 
     // ===== INIT =====
-    document.addEventListener('DOMContentLoaded', loadNews);
+    document.addEventListener('DOMContentLoaded', function() {
+        loadTheme();
+        loadNews();
+    });
 </script>
 </body>
 </html>
