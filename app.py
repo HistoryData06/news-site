@@ -6,6 +6,7 @@ from datetime import datetime
 import random
 import os
 from bs4 import BeautifulSoup
+import feedparser
 
 app = Flask(__name__)
 CORS(app)
