@@ -721,7 +721,7 @@
         updateSavedUI();
     }
 
-    // ===== ARTICLE POPUP (Clean News Style - No Formatting) =====
+        // ===== ARTICLE POPUP (Clean - No Source Info) =====
     function openArticlePopup(title, summary, source, category) {
         const overlay = document.getElementById('articleOverlay');
         const body = document.getElementById('articleBody');
@@ -752,7 +752,7 @@
                 cleanContent = cleanContent.replace(/[-*]\s+/g, '');
                 cleanContent = cleanContent.replace(/\n\s*\n/g, '\n\n');
                 
-                // Split into paragraphs by double newline or period
+                // Split into paragraphs
                 let paragraphs = cleanContent.split('\n\n').filter(p => p.trim());
                 if (paragraphs.length <= 1) {
                     paragraphs = cleanContent.split('. ').filter(s => s.trim());
@@ -762,12 +762,6 @@
                 }
                 
                 let html = `<h2 class="article-title">📰 ${data.title || title}</h2>`;
-                html += `<div class="article-meta">
-                    <span>📰 ${source || 'NewsPro'}</span>
-                    <span>🏷️ ${category || 'History'}</span>
-                    <span>📖 ${wordCount} words</span>
-                    <span>${data.source === 'ai_generated' ? '🤖 AI Generated' : '📖 Historical'}</span>
-                </div>`;
                 html += `<div class="article-body">`;
                 
                 if (paragraphs.length > 1) {
