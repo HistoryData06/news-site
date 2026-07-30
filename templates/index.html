@@ -84,19 +84,14 @@
         .article-overlay .article-content .article-meta span{display:flex;align-items:center;gap:6px}
         .article-overlay .article-content .article-body{color:#e0e0e0;line-height:2;font-size:1.05em}
         .article-overlay .article-content .article-body p{margin-bottom:16px}
-        .article-overlay .article-content .article-body h3{color:#FFD700;font-size:1.2em;margin:24px 0 12px}
-        .article-overlay .article-content .article-body ul{padding-left:25px;margin-bottom:16px}
-        .article-overlay .article-content .article-body li{margin-bottom:6px}
-        .article-overlay .article-content .loading-text{color:#888;text-align:center;padding:80px 0;font-size:1.2em}
         .article-overlay .article-content .article-source{text-align:center;color:#666;font-size:0.75em;padding:16px 0 0;border-top:1px solid rgba(255,215,0,0.06);margin-top:20px}
+        .article-overlay .article-content .loading-text{color:#888;text-align:center;padding:80px 0;font-size:1.2em}
         body.dark-mode .article-overlay .article-content{background:#1a1a1a}
         body.dark-mode .article-overlay .article-content .article-body{color:#d0d0d0}
         
-        /* ===== SPINNER ===== */
         .spinner{display:inline-block;width:40px;height:40px;border:3px solid #333;border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
         @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
-        /* ===== LIVE BANNER ===== */
         .live-banner{background:var(--live-bg);color:var(--live-text);padding:8px 20px;display:none;align-items:center;gap:15px;position:sticky;top:0;z-index:999;box-shadow:0 2px 15px rgba(204,0,0,0.3);transition:all 0.3s ease}
         .live-banner.show{display:flex}
         .live-banner .live-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse-dot 1s ease-in-out infinite;flex-shrink:0}
@@ -194,15 +189,12 @@
         .article-card .card-content .save-btn.saved:hover{background:rgba(255,74,74,0.2)}
         .article-card .card-content .tags .spacer{flex:1}
         .article-card .card-content h2{font-size:1.15em;font-weight:700;margin-bottom:8px;line-height:1.4}
-        .article-card .card-content h2 a{color:var(--text-primary);text-decoration:none;transition:color .2s}
-        .article-card .card-content h2 a:hover{color:#ff4a4a}
         .article-card .card-content .summary{color:var(--text-secondary);font-size:0.9em;line-height:1.7;margin-bottom:12px;transition:color 0.3s ease}
-        .article-card .card-content .summary .ai-label{color:#ff4a4a;font-weight:600;font-size:0.8em}
         .article-card .card-content .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.7em;color:var(--text-muted);border-top:1px solid var(--border-color);padding-top:12px;margin-top:4px;transition:all 0.3s ease}
         .article-card .card-content .meta .source{color:var(--text-muted)}
         .article-card .card-content .meta .time{color:var(--text-light)}
         .article-card .card-content .read-more{color:#ff4a4a;text-decoration:none;font-weight:700;transition:all .2s;font-size:0.8em;cursor:pointer}
-        .article-card .card-content .read-more:hover{color:#cc0000;text-decoration:underline}
+        .article-card .card-content .read-more:hover{color:#cc0000}
 
         .no-results{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1/-1}
         .no-results .big-icon{font-size:3em;display:block;margin-bottom:12px}
@@ -547,7 +539,9 @@
             const count = savedArticles.length;
             savedBtn.innerHTML = `⭐ Saved ${count > 0 ? `<span class="count">${count}</span>` : ''}`;
         }
-    }    // ===== TRENDING TOPICS =====
+    }
+
+    // ===== TRENDING TOPICS =====
     function extractTrendingTopics(articles) {
         const topicMap = {};
         const stopWords = ['the','a','an','of','for','on','at','to','in','with','without','and','but','or','yet','so','as','by','from','into','through','during','including','after','before','when','where','who','which','that','this','these','those','then','than','would','could','should','may','might','will','shall','have','has','had','do','does','did','more','most','some','any','no','only','own','same','so','than','too','very','just','but','also','etc','vs'];
@@ -603,9 +597,7 @@
         document.getElementById('searchClear').classList.add('show');
         renderCurrentView();
         renderTrendingTopics(trendingTopics);
-    }
-
-    // ===== LOAD NEWS =====
+    }    // ===== LOAD NEWS =====
     async function loadNews() {
         const grid = document.getElementById('newsContent');
         grid.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>`;
@@ -676,7 +668,9 @@
         currentView = 'all';
         allArticlesCache = (category === 'all') ? allArticles : allArticles.filter(a => a.category === category);
         renderCurrentView();
-    }    // ===== RENDER NEWS =====
+    }
+
+    // ===== RENDER NEWS =====
     function renderNews(articles) {
         const grid = document.getElementById('newsContent');
         if (!articles || articles.length === 0) {
@@ -727,7 +721,7 @@
         updateSavedUI();
     }
 
-    // ===== ARTICLE POPUP (BIG + AI GENERATED 200-300 WORDS) =====
+    // ===== ARTICLE POPUP (Clean News Style - No Formatting) =====
     function openArticlePopup(title, summary, source, category) {
         const overlay = document.getElementById('articleOverlay');
         const body = document.getElementById('articleBody');
@@ -736,7 +730,7 @@
         body.innerHTML = `
             <div class="loading-text">
                 <div class="spinner"></div>
-                <p>🤖 AI is writing a 200-300 word article...</p>
+                <p>📖 Loading article...</p>
             </div>
         `;
         
@@ -749,28 +743,43 @@
                 }
                 
                 const content = data.content || summary || 'No content available';
-                const paragraphs = content.split('\n').filter(p => p.trim());
                 const wordCount = data.word_count || content.split(' ').length;
+                
+                // Clean the content - remove any markdown
+                let cleanContent = content;
+                cleanContent = cleanContent.replace(/\*\*/g, '');
+                cleanContent = cleanContent.replace(/#{1,6}\s*/g, '');
+                cleanContent = cleanContent.replace(/[-*]\s+/g, '');
+                cleanContent = cleanContent.replace(/\n\s*\n/g, '\n\n');
+                
+                // Split into paragraphs by double newline or period
+                let paragraphs = cleanContent.split('\n\n').filter(p => p.trim());
+                if (paragraphs.length <= 1) {
+                    paragraphs = cleanContent.split('. ').filter(s => s.trim());
+                    if (paragraphs.length > 1) {
+                        paragraphs = paragraphs.map(s => s.trim() + '.');
+                    }
+                }
                 
                 let html = `<h2 class="article-title">📰 ${data.title || title}</h2>`;
                 html += `<div class="article-meta">
                     <span>📰 ${source || 'NewsPro'}</span>
                     <span>🏷️ ${category || 'History'}</span>
                     <span>📖 ${wordCount} words</span>
-                    <span>🤖 ${data.source === 'ai_generated' ? 'AI Generated' : 'Historical'}</span>
+                    <span>${data.source === 'ai_generated' ? '🤖 AI Generated' : '📖 Historical'}</span>
                 </div>`;
                 html += `<div class="article-body">`;
                 
-                paragraphs.forEach(p => {
-                    const trimmed = p.trim();
-                    if (trimmed) {
-                        if (trimmed.startsWith('**') && trimmed.includes('**')) {
-                            html += `<h3>${trimmed.replace(/\*\*/g, '')}</h3>`;
-                        } else {
+                if (paragraphs.length > 1) {
+                    paragraphs.forEach(p => {
+                        const trimmed = p.trim();
+                        if (trimmed) {
                             html += `<p>${trimmed}</p>`;
                         }
-                    }
-                });
+                    });
+                } else {
+                    html += `<p>${cleanContent}</p>`;
+                }
                 
                 html += `</div>`;
                 html += `<div class="article-source">📖 All content available here • No external links needed</div>`;
