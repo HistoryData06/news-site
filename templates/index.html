@@ -83,21 +83,22 @@
         .article-overlay .article-content .article-text{color:#ddd;line-height:1.9;font-size:0.95em}
         .article-overlay .article-content .article-text p{margin-bottom:12px}
         .article-overlay .article-content .loading-text{color:#888;text-align:center;padding:40px 0}
+        body.dark-mode .article-overlay .article-content{background:#1a1a1a}
+        body.dark-mode .article-overlay .article-content .article-text{color:#ccc}
 
-        /* LIVE BANNER */
         .live-banner{background:var(--live-bg);color:var(--live-text);padding:8px 20px;display:none;align-items:center;gap:15px;position:sticky;top:0;z-index:999;box-shadow:0 2px 15px rgba(204,0,0,0.3);transition:all 0.3s ease}
         .live-banner.show{display:flex}
         .live-banner .live-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse-dot 1s ease-in-out infinite;flex-shrink:0}
         @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
         .live-banner .live-label{font-weight:700;font-size:0.7em;text-transform:uppercase;letter-spacing:2px;background:rgba(255,255,255,0.15);padding:2px 12px;border-radius:20px;white-space:nowrap}
         .live-banner .live-text{flex:1;font-size:0.85em;font-weight:400;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-        .live-banner .live-text a{color:#fff;text-decoration:underline;font-weight:600}
         .live-banner .live-count{background:rgba(255,255,255,0.15);padding:2px 12px;border-radius:20px;font-size:0.7em;font-weight:700;white-space:nowrap}
         .live-banner .live-close{background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:1.2em;cursor:pointer;padding:0 8px;border-radius:20px;transition:background 0.3s ease;font-weight:700}
         .live-banner .live-close:hover{background:rgba(255,255,255,0.2)}
         .live-indicator{display:none;align-items:center;gap:6px;background:rgba(204,0,0,0.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(204,0,0,0.2);font-size:0.7em;color:#cc0000;font-weight:600}
         .live-indicator .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cc0000;animation:pulse-dot 1s ease-in-out infinite}
         .live-indicator.active{display:flex}
+
         .trending-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .trending-container .trending-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
         .trending-container .trending-header .icon{font-size:1.3em}
@@ -114,6 +115,7 @@
         .trending-container .trending-topics .topic.active{background:#ff4a4a;color:#fff;border-color:#ff4a4a}
         .trending-container .trending-topics .topic.active .count{background:#fff;color:#ff4a4a}
         .trending-container .trending-empty{color:var(--text-muted);font-size:0.8em;padding:8px 0;text-align:center}
+
         .search-container{background:var(--bg-card);border-radius:10px;padding:15px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .search-container .search-wrapper{display:flex;align-items:center;gap:12px;position:relative}
         .search-container .search-icon{font-size:1.2em;color:var(--text-muted)}
@@ -125,11 +127,13 @@
         .search-container .search-clear.show{display:block}
         .search-container .search-count{font-size:0.75em;color:var(--text-muted);white-space:nowrap;padding:0 8px}
         .search-container .search-count span{color:var(--text-primary);font-weight:700}
+
         .top-bar{background:var(--bg-topbar);color:#aaa;padding:8px 0;font-size:0.7em;border-bottom:1px solid #333;display:block;transition:background 0.3s ease}
         .top-bar .inner{max-width:1100px;margin:0 auto;padding:0 15px;display:flex;justify-content:space-between;align-items:center}
         .top-bar .inner a{color:#aaa;text-decoration:none;margin-left:15px;transition:color .2s}
         .top-bar .inner a:hover{color:#fff}
         .top-bar .inner .date{color:#888}
+
         .header{background:var(--bg-header);padding:20px 0;border-bottom:3px solid #ff4a4a;margin-bottom:30px;box-shadow:0 2px 10px var(--shadow-color);transition:all 0.3s ease}
         .header .inner{max-width:1100px;margin:0 auto;padding:0 15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
         .header .logo{font-size:2.2em;font-weight:900;color:var(--text-primary);letter-spacing:-1px;transition:color 0.3s ease}
@@ -143,6 +147,7 @@
         .header .header-right .live-indicator.active{display:flex}
         .header .header-right .theme-toggle{background:var(--tag-bg);border:1px solid var(--border-color);border-radius:30px;padding:6px 14px;cursor:pointer;font-size:1.1em;transition:all 0.3s ease;color:var(--text-primary);display:flex;align-items:center;gap:8px}
         .header .header-right .theme-toggle:hover{transform:scale(1.05)}
+
         .category-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:30px;background:var(--bg-card);padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px var(--shadow-color);border:1px solid var(--border-color);transition:all 0.3s ease}
         .category-filter button{padding:8px 18px;background:transparent;border:none;border-radius:30px;color:var(--text-muted);cursor:pointer;transition:all .25s ease;font-size:0.8em;font-weight:600}
         .category-filter button:hover{background:var(--tag-bg);color:var(--text-primary)}
@@ -150,15 +155,15 @@
         .category-filter button.saved-tab{background:var(--tag-bg);color:var(--text-muted)}
         .category-filter button.saved-tab.active{background:#ff4a4a;color:#fff}
         .category-filter button.saved-tab .count{background:rgba(255,255,255,0.2);padding:0 8px;border-radius:10px;font-size:0.7em;margin-left:4px}
+
         .news-grid{display:grid;grid-template-columns:1fr;gap:25px}
         @media(min-width:768px){.news-grid{grid-template-columns:repeat(2,1fr)}
         .news-grid .featured{grid-column:1 / -1}}
         @media(min-width:1024px){.news-grid{grid-template-columns:repeat(3,1fr)}
         .news-grid .featured{grid-column:1 / -1}}
+
         .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color);position:relative;animation:fadeIn .5s ease forwards;cursor:pointer}
         @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        .article-card.new-article{animation:slideIn .5s ease forwards}
-        @keyframes slideIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
         .article-card:hover{box-shadow:0 8px 30px var(--shadow-hover);transform:translateY(-4px);border-color:var(--text-light)}
         .article-card .card-image{width:100%;height:200px;overflow:hidden;background:#1a1a1a;position:relative}
         .article-card .card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
@@ -166,8 +171,6 @@
         .article-card .card-image .no-image{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555;font-size:2.5em;background:#1a1a1a}
         .article-card .card-image .saved-badge{position:absolute;top:12px;right:12px;background:#ff4a4a;color:#fff;padding:4px 10px;border-radius:20px;font-size:0.6em;font-weight:700;text-transform:uppercase;letter-spacing:1px;box-shadow:0 2px 10px rgba(255,74,74,0.3)}
         .article-card .card-image .saved-badge .icon{font-size:0.9em;margin-right:4px}
-        .article-card .card-image .new-badge{position:absolute;top:12px;left:12px;background:#4caf50;color:#fff;padding:4px 10px;border-radius:20px;font-size:0.6em;font-weight:700;text-transform:uppercase;letter-spacing:1px;animation:pulse-badge 1.5s ease-in-out infinite}
-        @keyframes pulse-badge{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.95)}}
         .article-card .card-content{padding:18px 20px 20px}
         .article-card .card-content .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;align-items:center}
         .article-card .card-content .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:var(--source-tag-text);background:var(--source-tag-bg);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.3s ease}
@@ -189,6 +192,7 @@
         .article-card .card-content .meta .time{color:var(--text-light)}
         .article-card .card-content .read-more{color:#ff4a4a;text-decoration:none;font-weight:700;transition:all .2s;font-size:0.8em;cursor:pointer}
         .article-card .card-content .read-more:hover{color:#cc0000;text-decoration:underline}
+
         .no-results{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1/-1}
         .no-results .big-icon{font-size:3em;display:block;margin-bottom:12px}
         .loading-state{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1 / -1;transition:color 0.3s ease}
@@ -196,6 +200,7 @@
         @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
         .refresh-btn{display:block;width:100%;max-width:280px;margin:35px auto 0;padding:14px 30px;background:#ff4a4a;border:none;border-radius:50px;color:#fff;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:2px;transition:all .3s ease;font-size:0.85em;box-shadow:0 4px 15px rgba(255,74,74,0.2)}
         .refresh-btn:hover{background:#cc0000;transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,74,74,0.3)}
+
         .related-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-top:25px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .related-container .related-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
         .related-container .related-header h3{font-size:0.85em;font-weight:700;color:var(--text-primary);letter-spacing:0.5px}
@@ -209,6 +214,7 @@
         .related-container .related-empty{color:var(--text-muted);font-size:0.8em;padding:10px 0;text-align:center}
         .footer{text-align:center;color:var(--text-light);font-size:.7em;padding:35px 0 10px;border-top:1px solid var(--border-color);margin-top:30px;transition:all 0.3s ease}
         .footer .heart{color:#ff4a4a}
+
         @media(max-width:767px){.container{padding:15px 12px 30px}
         .header{padding:15px 0}
         .header .logo{font-size:1.6em}
@@ -242,14 +248,9 @@
         .search-container .search-count{font-size:0.65em}
         .article-card .card-content .save-btn{width:28px;height:28px;font-size:0.85em}
         .trending-container .trending-topics{gap:6px}}
-        
-        /* Article Popup - Dark/Light */
-        body.dark-mode .article-overlay .article-content{background:#1a1a1a}
-        body.dark-mode .article-overlay .article-content .article-text{color:#ccc}
     </style>
 </head>
-<body>
-<!-- LIVE BANNER -->
+<body><!-- LIVE BANNER -->
 <div class="live-banner" id="liveBanner">
     <span class="live-dot"></span>
     <span class="live-label">🔴 LIVE</span>
@@ -319,16 +320,342 @@
             <span class="search-icon">🔍</span>
             <input type="text" id="searchInput" placeholder="Search news articles..." oninput="handleSearch(this.value)">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
-            <span class="search-count" id="searchCount"><span id="searchResultCount
+            <span class="search-count" id="searchCount"><span id="searchResultCount">0</span> results</span>
+        </div>
+    </div>
+    
+    <!-- CATEGORIES -->
+    <div class="category-filter" id="categoryFilter">
+        <button class="active" data-category="all">All</button>
+    </div>
+    
+    <!-- NEWS GRID -->
+    <div class="news-grid" id="newsContent">
+        <div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>
+    </div>
+    
+    <!-- RELATED ARTICLES -->
+    <div class="related-container" id="relatedContainer">
+        <div class="related-header">
+            <h3>📰 Related <span>Articles</span></h3>
+        </div>
+        <div class="related-list" id="relatedList">
+            <div class="related-empty">Click any article to see related news</div>
+        </div>
+    </div>
+    
+    <!-- REFRESH -->
+    <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
+    <div class="footer"><span class="heart">❤</span> NewsPro • All sources credited</div>
+</div>
+<script>    // ===== STATE =====
+    let currentView = 'all';
+    let currentCategory = 'all';
+    let allArticles = [];
+    let allArticlesCache = [];
+    let searchQuery = '';
+    let savedArticles = JSON.parse(localStorage.getItem('newsProSaved') || '[]');
+    let trendingTopics = [];
+    let selectedTrending = null;
+    let updateInterval = null;
+    let previousArticles = [];
+    let isLiveEnabled = true;
+
+    // ===== SET CURRENT DATE =====
+    function setDate() {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+    }
+    setDate();
+
+    // ===== DARK MODE =====
+    function toggleTheme() {
+        const body = document.body;
+        const toggle = document.getElementById('themeToggle');
+        const icon = toggle.querySelector('.icon');
+        const label = toggle.querySelector('.label');
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            icon.textContent = '☀️';
+            label.textContent = 'Light';
+            localStorage.setItem('theme', 'dark');
+        } else {
+            icon.textContent = '🌙';
+            label.textContent = 'Dark';
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const body = document.body;
+        const toggle = document.getElementById('themeToggle');
+        const icon = toggle.querySelector('.icon');
+        const label = toggle.querySelector('.label');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            icon.textContent = '☀️';
+            label.textContent = 'Light';
+        } else {
+            body.classList.remove('dark-mode');
+            icon.textContent = '🌙';
+            label.textContent = 'Dark';
+        }
+    }
+
+    // ===== LIVE UPDATES =====
+    function startLiveUpdates() {
+        if (updateInterval) clearInterval(updateInterval);
+        updateInterval = setInterval(() => {
+            if (isLiveEnabled) checkForUpdates();
+        }, 30000);
+    }
+
+    function stopLiveUpdates() {
+        if (updateInterval) { clearInterval(updateInterval); updateInterval = null; }
+    }
+
+    async function checkForUpdates() {
+        try {
+            const response = await fetch('/api/news');
+            const data = await response.json();
+            const newArticles = data.articles || [];
+            if (previousArticles.length > 0 && newArticles.length > previousArticles.length) {
+                const newCount = newArticles.length - previousArticles.length;
+                showLiveBanner(newArticles, newCount);
+                const dot = document.getElementById('updateDot');
+                const status = document.getElementById('updateStatus');
+                dot.classList.add('updating');
+                status.textContent = '🔴 New updates!';
+                setTimeout(() => { dot.classList.remove('updating'); status.textContent = 'Auto-refresh'; }, 3000);
+            }
+            previousArticles = newArticles;
+        } catch (err) { console.log('Live update check failed:', err); }
+    }
+
+    function showLiveBanner(articles, count) {
+        const banner = document.getElementById('liveBanner');
+        const text = document.getElementById('liveText');
+        const countEl = document.getElementById('liveCount');
+        if (articles.length > 0) {
+            const latest = articles[0];
+            text.innerHTML = `${latest.title} <a href="${latest.link}" target="_blank">Read more →</a>`;
+            countEl.textContent = `${count} new`;
+            banner.classList.add('show');
+            document.getElementById('liveIndicator').classList.add('active');
+        }
+    }
+
+    function closeLiveBanner() {
+        document.getElementById('liveBanner').classList.remove('show');
+        document.getElementById('liveIndicator').classList.remove('active');
+    }
+
+    function toggleLiveUpdates() {
+        isLiveEnabled = !isLiveEnabled;
+        const status = document.getElementById('updateStatus');
+        if (isLiveEnabled) { status.textContent = 'Auto-refresh'; startLiveUpdates(); } 
+        else { status.textContent = '⏸️ Paused'; stopLiveUpdates(); }
+    }    // ===== SEARCH =====
+    function handleSearch(query) {
+        searchQuery = query.trim().toLowerCase();
+        const clearBtn = document.getElementById('searchClear');
+        if (query.length > 0) { clearBtn.classList.add('show'); } 
+        else { clearBtn.classList.remove('show'); }
+        renderCurrentView();
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('searchClear').classList.remove('show');
+        searchQuery = '';
+        selectedTrending = null;
+        renderCurrentView();
+        renderTrendingTopics(trendingTopics);
+        document.getElementById('searchInput').focus();
+    }
+
+    function getFilteredArticles() {
+        let articles = (currentView === 'saved') ? savedArticles : allArticlesCache;
+        if (searchQuery) {
+            return articles.filter(article => {
+                const title = (article.title || '').toLowerCase();
+                const summary = (article.summary || '').toLowerCase();
+                const source = (article.source || '').toLowerCase();
+                const category = (article.category || '').toLowerCase();
+                return title.includes(searchQuery) || summary.includes(searchQuery) || 
+                       source.includes(searchQuery) || category.includes(searchQuery);
+            });
+        }
+        return articles;
+    }
+
+    function renderCurrentView() {
+        const filtered = getFilteredArticles();
+        document.getElementById('searchResultCount').textContent = filtered.length;
+        renderNews(filtered);
+    }
+
+    // ===== SAVE ARTICLES =====
+    function toggleSave(article) {
+        const index = savedArticles.findIndex(a => a.link === article.link);
+        if (index > -1) { savedArticles.splice(index, 1); } 
+        else {
+            savedArticles.push({
+                title: article.title,
+                link: article.link,
+                source: article.source,
+                category: article.category,
+                summary: article.summary,
+                image: article.image,
+                read_time: article.read_time,
+                savedAt: new Date().toISOString()
+            });
+        }
+        localStorage.setItem('newsProSaved', JSON.stringify(savedArticles));
+        updateSavedUI();
+        renderCurrentView();
+    }
+
+    function isSaved(link) {
+        return savedArticles.some(a => a.link === link);
+    }
+
+    function updateSavedUI() {
+        const savedBtn = document.querySelector('#categoryFilter button[data-category="saved"]');
+        if (savedBtn) {
+            const count = savedArticles.length;
+            savedBtn.innerHTML = `⭐ Saved ${count > 0 ? `<span class="count">${count}</span>` : ''}`;
+        }
+    }
+
+    // ===== TRENDING TOPICS =====
+    function extractTrendingTopics(articles) {
+        const topicMap = {};
+        const stopWords = ['the','a','an','of','for','on','at','to','in','with','without','and','but','or','yet','so','as','by','from','into','through','during','including','after','before','when','where','who','which','that','this','these','those','then','than','would','could','should','may','might','will','shall','have','has','had','do','does','did','more','most','some','any','no','only','own','same','so','than','too','very','just','but','also','etc','vs'];
+        articles.forEach(article => {
+            const title = article.title || '';
+            const words = title.split(' ');
+            const keywords = words.filter(w => w.length > 3 && !stopWords.includes(w.toLowerCase()));
+            keywords.forEach(word => {
+                const clean = word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                if (clean.length > 2) { topicMap[clean] = (topicMap[clean] || 0) + 1; }
+            });
+        });
+        const sorted = Object.entries(topicMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        trendingTopics = sorted.map(([word, count]) => ({
+            word: word,
+            count: count,
+            display: word.charAt(0).toUpperCase() + word.slice(1)
+        }));
+        return trendingTopics;
+    }
+
+    function renderTrendingTopics(topics) {
+        const container = document.getElementById('trendingTopics');
+        if (!topics || topics.length === 0) {
+            container.innerHTML = '<div class="trending-empty">No trending topics yet</div>';
+            return;
+        }
+        const emojis = ['🔥', '💥', '⭐', '🚀', '📈', '⚡', '🎯', '💡', '🌟', '💪'];
+        let html = '';
+        topics.forEach((topic, index) => {
+            const emoji = emojis[index % emojis.length];
+            const isActive = selectedTrending === topic.word;
+            html += `<div class="topic ${isActive ? 'active' : ''}" onclick="filterByTrending('${topic.word}')">
+                <span class="emoji">${emoji}</span> ${topic.display} <span class="count">${topic.count}</span>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function filterByTrending(word) {
+        if (selectedTrending === word) {
+            selectedTrending = null;
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('searchClear').classList.remove('show');
+            renderCurrentView();
+            renderTrendingTopics(trendingTopics);
+            return;
+        }
+        selectedTrending = word;
+        document.getElementById('searchInput').value = word;
+        searchQuery = word;
+        document.getElementById('searchClear').classList.add('show');
+        renderCurrentView();
+        renderTrendingTopics(trendingTopics);
+    }    // ===== LOAD NEWS =====
+    async function loadNews() {
+        const grid = document.getElementById('newsContent');
+        grid.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>`;
+        try {
+            const response = await fetch('/api/news');
+            const data = await response.json();
+            allArticles = data.articles || [];
+            allArticlesCache = allArticles;
+            previousArticles = allArticles;
+            document.getElementById('articleCount').textContent = data.total || 0;
+            document.getElementById('searchResultCount').textContent = data.total || 0;
+            
+            const topics = extractTrendingTopics(allArticles);
+            renderTrendingTopics(topics);
+            
+            const categories = await fetch('/api/categories');
+            const catData = await categories.json();
+            updateCategories(catData.categories);
+            
+            currentView = 'all';
+            renderCurrentView();
+            updateSavedUI();
+            document.getElementById('relatedList').innerHTML = '<div class="related-empty">Click any article to see related news</div>';
+            startLiveUpdates();
+        } catch (err) {
+            grid.innerHTML = `<div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;">
+                <p style="color:#ff4a4a;font-weight:600;">❌ Error loading news</p>
+                <p style="color:var(--text-muted);font-size:0.9em;margin-top:8px;">${err.message}</p>
+                <button onclick="loadNews()" style="margin-top:15px;padding:10px 25px;background:#ff4a4a;border:none;border-radius:30px;color:#fff;font-weight:600;cursor:pointer;">Retry</button>
+            </div>`;
+        }
+    }
+
+    // ===== UPDATE CATEGORIES =====
+    function updateCategories(categories) {
+        const container = document.getElementById('categoryFilter');
+        container.innerHTML = `<button class="active" data-category="all">All</button>`;
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.dataset.category = cat;
+            btn.textContent = cat;
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#categoryFilter button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentView = 'all';
+                filterNews(this.dataset.category);
+            });
+            container.appendChild(btn);
+        });
+        const savedBtn = document.createElement('button');
+        savedBtn.dataset.category = 'saved';
+        savedBtn.className = 'saved-tab';
+        savedBtn.innerHTML = `⭐ Saved <span class="count">${savedArticles.length}</span>`;
+        savedBtn.addEventListener('click', function() {
+            document.querySelectorAll('#categoryFilter button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentView = 'saved';
+            currentCategory = 'saved';
+            renderCurrentView();
+            updateSavedUI();
+        });
+        container.appendChild(savedBtn);
+    }
+
     // ===== FILTER NEWS =====
     function filterNews(category) {
         currentCategory = category;
         currentView = 'all';
-        if (category === 'all') {
-            allArticlesCache = allArticles;
-        } else {
-            allArticlesCache = allArticles.filter(article => article.category === category);
-        }
+        allArticlesCache = (category === 'all') ? allArticles : allArticles.filter(a => a.category === category);
         renderCurrentView();
     }
 
@@ -336,13 +663,7 @@
     function renderNews(articles) {
         const grid = document.getElementById('newsContent');
         if (!articles || articles.length === 0) {
-            grid.innerHTML = `
-                <div class="no-results">
-                    <span class="big-icon">🔍</span>
-                    <p>No articles found</p>
-                    <p style="font-size:0.8em;color:var(--text-light);margin-top:4px;">Try a different search term</p>
-                </div>
-            `;
+            grid.innerHTML = `<div class="no-results"><span class="big-icon">🔍</span><p>No articles found</p></div>`;
             return;
         }
         let html = '';
@@ -351,124 +672,69 @@
             const featuredClass = isFeatured ? 'featured' : '';
             const timeAgo = article.published ? timeSince(article.published) : '';
             const saved = isSaved(article.link);
-            
-            let imageHtml = '';
-            if (article.image) {
-                imageHtml = `<img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-image\\'>📰</div>'">`;
-            } else {
-                imageHtml = `<div class="no-image">📰</div>`;
-            }
-
-            const summaryHtml = article.rewritten ? 
-                `<span class="ai-label">✨ AI Rewritten:</span> ${article.summary}` : 
-                article.summary;
-
-            const readTimeText = article.read_time ? 
-                `<span class="read-time">⏱️ ${article.read_time} min read</span>` : '';
-
-            let highlightedTitle = article.title || '';
-            if (searchQuery) {
-                const regex = new RegExp(`(${searchQuery})`, 'gi');
-                highlightedTitle = (article.title || '').replace(regex, '<mark style="background:#ff4a4a;color:#fff;padding:0 4px;border-radius:3px;">$1</mark>');
-            }
-
-            // Escape article data for onclick
+            const readTimeText = article.read_time ? `⏱️ ${article.read_time} min read` : '';
             const safeTitle = article.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            const safeSummary = (article.summary || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            const safeSource = (article.source || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            const safeCategory = (article.category || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            const safeLink = (article.link || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
-            html += `
-                <div class="article-card ${featuredClass}" data-link="${article.link}" onclick="openArticlePopup('${safeTitle}', '${safeSummary}', '${safeSource}', '${safeCategory}', '${safeLink}', ${article.read_time || 0})">
-                    <div class="card-image">
-                        ${imageHtml}
-                        ${saved ? `<div class="saved-badge"><span class="icon">⭐</span> Saved</div>` : ''}
+            
+            html += `<div class="article-card ${featuredClass}" onclick="openArticlePopup('${safeTitle}', '${article.summary || ''}', '${article.source || ''}', '${article.category || ''}')">
+                <div class="card-image">
+                    <img src="${article.image || 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=News'}" alt="${article.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-image\\'>📰</div>'">
+                    ${saved ? `<div class="saved-badge"><span class="icon">⭐</span> Saved</div>` : ''}
+                </div>
+                <div class="card-content">
+                    <div class="tags">
+                        <span class="source-tag">${article.source || 'News'}</span>
+                        <span class="category-tag">${article.category || 'General'}</span>
+                        ${readTimeText}
+                        <span class="spacer"></span>
+                        <button class="save-btn ${saved ? 'saved' : ''}" onclick="event.stopPropagation();toggleSave({
+                            title: '${safeTitle}',
+                            link: '${article.link || ''}',
+                            source: '${article.source || ''}',
+                            category: '${article.category || ''}',
+                            summary: '${article.summary || ''}',
+                            image: '${article.image || ''}',
+                            read_time: ${article.read_time || 0}
+                        })">${saved ? '⭐' : '☆'}</button>
                     </div>
-                    <div class="card-content">
-                        <div class="tags">
-                            <span class="source-tag">${article.source || 'News'}</span>
-                            <span class="category-tag">${article.category || 'General'}</span>
-                            ${article.rewritten ? '<span class="ai-badge">✨ AI</span>' : ''}
-                            ${readTimeText}
-                            <span class="spacer"></span>
-                            <button class="save-btn ${saved ? 'saved' : ''}" data-link="${article.link}" onclick="event.stopPropagation();toggleSave({
-                                title: '${safeTitle}',
-                                link: '${safeLink}',
-                                source: '${safeSource}',
-                                category: '${safeCategory}',
-                                summary: '${safeSummary}',
-                                image: '${article.image || ''}',
-                                read_time: ${article.read_time || 0}
-                            })">
-                                ${saved ? '⭐' : '☆'}
-                            </button>
-                        </div>
-                        <h2>${highlightedTitle}</h2>
-                        <div class="summary">${summaryHtml}</div>
-                        <div class="meta">
-                            <span class="source">📰 ${article.source || 'Unknown'}</span>
-                            <span class="time">${timeAgo}</span>
-                            <span class="read-more" onclick="event.stopPropagation();openArticlePopup('${safeTitle}', '${safeSummary}', '${safeSource}', '${safeCategory}', '${safeLink}', ${article.read_time || 0})">Read full article →</span>
-                        </div>
+                    <h2>${article.title}</h2>
+                    <div class="summary">${article.summary || ''}</div>
+                    <div class="meta">
+                        <span class="source">📰 ${article.source || 'Unknown'}</span>
+                        <span class="time">${timeAgo}</span>
+                        <span class="read-more" onclick="event.stopPropagation();openArticlePopup('${safeTitle}', '${article.summary || ''}', '${article.source || ''}', '${article.category || ''}')">Read full article →</span>
                     </div>
                 </div>
-            `;
+            </div>`;
         });
         grid.innerHTML = html;
         updateSavedUI();
     }
 
     // ===== ARTICLE POPUP (NO EXTERNAL LINKS) =====
-    function openArticlePopup(title, summary, source, category, link, readTime) {
+    function openArticlePopup(title, summary, source, category) {
         const overlay = document.getElementById('articleOverlay');
         const body = document.getElementById('articleBody');
         overlay.classList.add('active');
-        
-        // Generate article content - everything stays inside the app
-        const paragraphs = summary.split('. ').filter(p => p.trim().length > 10);
-        let articleHtml = `<h2 class="article-title">📰 ${title}</h2>`;
-        articleHtml += `<div class="article-text">`;
-        
-        // Create a rich article from the summary
-        if (paragraphs.length > 1) {
-            paragraphs.forEach(p => {
-                if (p.trim()) {
-                    articleHtml += `<p>${p.trim()}.</p>`;
-                }
-            });
-        } else {
-            articleHtml += `<p>${summary}</p>`;
-        }
-        
-        // Add more context if we have limited content
-        if (summary.length < 100) {
-            articleHtml += `<p><em>${title} is a significant story from ${source}. This event falls under the ${category} category and continues to be relevant to readers worldwide.</em></p>`;
-        }
-        
-        // Add read time and source info
-        articleHtml += `<p style="color:var(--text-muted);font-size:0.8em;border-top:1px solid var(--border-color);padding-top:12px;margin-top:12px;">
-            ⏱️ ${readTime || 1} min read • 📰 ${source} • 🏷️ ${category}
-        </p>`;
-        
-        // Add a "Stay on site" note (no external link)
-        articleHtml += `<p style="text-align:center;color:var(--text-light);font-size:0.7em;margin-top:8px;">
-            📖 All content available here • No external links needed
-        </p>`;
-        
-        articleHtml += `</div>`;
-        body.innerHTML = articleHtml;
+        body.innerHTML = `
+            <h2 class="article-title">📰 ${title}</h2>
+            <div class="article-text">
+                <p>${summary || 'Read more about this topic in our full article.'}</p>
+                <p style="color:var(--text-muted);font-size:0.9em;margin-top:16px;border-top:1px solid var(--border-color);padding-top:12px;">
+                    📰 Source: ${source || 'NewsPro'} • 🏷️ Category: ${category || 'General'}
+                </p>
+                <p style="color:var(--text-light);font-size:0.8em;text-align:center;margin-top:8px;">
+                    📖 All content available here • No external links needed
+                </p>
+            </div>
+        `;
     }
 
     function closeArticle() {
         document.getElementById('articleOverlay').classList.remove('active');
     }
 
-    // Close with Escape key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeArticle();
-        }
+        if (e.key === 'Escape') closeArticle();
     });
 
     // ===== TIME AGO =====
@@ -486,14 +752,10 @@
             ];
             for (const interval of intervals) {
                 const count = Math.floor(seconds / interval.seconds);
-                if (count >= 1) {
-                    return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
-                }
+                if (count >= 1) return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
             }
             return 'Just now';
-        } catch {
-            return '';
-        }
+        } catch { return ''; }
     }
 
     // ===== INIT =====
