@@ -28,11 +28,9 @@ NEWS_SOURCES = [
 ]
 
 def clean_html(text):
-    """Remove HTML tags from text"""
     return re.sub(r'<[^>]+>', '', text)
 
 def fetch_article_image(article_url):
-    """Visit the article page and extract the main image URL"""
     if not article_url:
         return None
     try:
@@ -52,7 +50,6 @@ def fetch_article_image(article_url):
     return None
 
 def extract_image_from_entry(entry, category='General'):
-    """Extract image from RSS entry or fetch from article page"""
     image = None
     if 'media_thumbnail' in entry and entry.media_thumbnail:
         image = entry.media_thumbnail[0]['url']
@@ -77,12 +74,10 @@ def extract_image_from_entry(entry, category='General'):
     return image
 
 def calculate_read_time(text):
-    """Calculate reading time in minutes"""
     words = len(text.split())
     return max(1, round(words / 200))
 
 def get_articles():
-    """Fetch articles from all news sources"""
     all_articles = []
     for source in NEWS_SOURCES:
         try:
@@ -113,26 +108,14 @@ def get_articles():
     return all_articles
 
 def generate_fallback_article(title, year):
-    """Generate a fallback article if AI fails"""
     year_text = f" in {year}" if year else ""
-    
-    article = f"**{title}**\n\n"
-    article += f"This significant historical event{year_text} represents an important moment in history. "
-    
+    article = f"{title} is a significant historical event{year_text} that represents an important moment in history. "
     if year:
         article += f"The year {year} was a period of great change and development, and this event played a crucial role in shaping the world we live in today. "
-    
     article += "Historians continue to study this event to understand its causes, consequences, and lasting impact on society. "
-    
-    article += "\n\n**Historical Context**\n\n"
     article += "Understanding this event requires looking at the broader historical context. The political, social, and economic conditions of the time created the environment in which this event could occur. "
-    
-    article += "\n\n**Significance**\n\n"
     article += "This event is significant because it influenced subsequent historical developments and shaped the course of history. Its legacy can still be seen in modern institutions, cultural practices, and international relations. "
-    
-    article += "\n\n**Legacy**\n\n"
     article += "The lasting impact of this event serves as a reminder of how historical moments continue to influence our present and future. By studying such events, we gain valuable insights into human nature, society, and the forces that shape our world."
-    
     return article
 
 # ===== ROUTES =====
@@ -156,18 +139,16 @@ def api_categories():
 
 @app.route('/api/article')
 def get_article():
-    """Generate a complete 200-300 word article using AI"""
+    """Generate a clean, plain text article (200-300 words)"""
     title = request.args.get('title', '')
     if not title:
         return jsonify({'error': 'No title provided'}), 400
     
-    # Extract year if present
     year_match = re.search(r'\b(\d{4})\b', title)
     year = year_match.group(1) if year_match else None
     
     deepseek_key = os.environ.get('DEEPSEEK_API_KEY')
     
-    # Try AI first
     if deepseek_key:
         try:
             url = "https://api.deepseek.com/v1/chat/completions"
@@ -178,21 +159,25 @@ def get_article():
             
             year_text = f" in the year {year}" if year else ""
             
-            prompt = f"""Write a complete, self-contained historical article about: {title}{year_text}.
+            prompt = f"""Write a complete, self-contained news article about: {title}{year_text}.
 
-The article should:
+IMPORTANT:
+- Write as a normal news article, just plain text
+- NO headings like "Historical Context", "Significance", "Legacy"
+- NO bullet points or asterisks
+- NO markdown formatting at all
+- Just flowing paragraphs like a real news story
 - Be 200-300 words long
-- Include key historical facts, context, and significance
-- Be written in a clear, engaging, and professional style
-- Stand alone as a complete article (no external links needed)
-- End with a meaningful conclusion about its historical importance
+- Include key facts and context
+- End with a natural conclusion
+- Write in English
 
-Write the article in English:"""
+Article:"""
             
             data = {
                 "model": "deepseek-chat",
                 "messages": [
-                    {"role": "system", "content": "You are a professional historian writing engaging, self-contained articles for a history app. Write in a clear, informative style."},
+                    {"role": "system", "content": "You are a professional journalist writing engaging, clear news articles without any headings, bullet points, or markdown formatting. Just plain text paragraphs."},
                     {"role": "user", "content": prompt}
                 ],
                 "temperature": 0.7,
@@ -205,6 +190,9 @@ Write the article in English:"""
                 result = response.json()
                 article = result.get('choices', [{}])[0].get('message', {}).get('content', '')
                 if article and len(article) > 50:
+                    article = re.sub(r'\*\*([^*]+)\*\*', r'\1', article)
+                    article = re.sub(r'#{1,6}\s*', '', article)
+                    article = re.sub(r'[-*]\s+', '', article)
                     return jsonify({
                         'title': title,
                         'content': article,
@@ -214,7 +202,6 @@ Write the article in English:"""
         except Exception as e:
             print(f"DeepSeek error: {e}")
     
-    # Fallback: Generate a rich article from the title
     fallback = generate_fallback_article(title, year)
     return jsonify({
         'title': title,
