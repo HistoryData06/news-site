@@ -43,9 +43,10 @@
         /* ===== ARTICLE CARD ===== */
         .article-card{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #eee;transition:all .3s ease;box-shadow:0 2px 8px rgba(0,0,0,0.02)}
         .article-card:hover{box-shadow:0 8px 30px rgba(0,0,0,0.07);transform:translateY(-4px);border-color:#ddd}
-        .article-card .card-image{width:100%;height:200px;overflow:hidden;background:#f5f5f5;position:relative}
+        .article-card .card-image{width:100%;height:200px;overflow:hidden;background:#1a1a1a;position:relative}
         .article-card .card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
         .article-card:hover .card-image img{transform:scale(1.03)}
+        .article-card .card-image .no-image{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555;font-size:2.5em;background:#1a1a1a}
         .article-card .card-content{padding:18px 20px 20px}
         .article-card .card-content .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
         .article-card .card-content .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:#ff4a4a;background:#fff0f0;text-transform:uppercase;letter-spacing:0.5px}
@@ -229,12 +230,12 @@
             const featuredClass = isFeatured ? 'featured' : '';
             const timeAgo = article.published ? timeSince(article.published) : '';
             
-            // Image HTML
+            // Image HTML with fallback
             let imageHtml = '';
             if (article.image) {
-                imageHtml = `<div class="card-image"><img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.style.display='none'"></div>`;
+                imageHtml = `<img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'no-image\\'>📰</div>'">`;
             } else {
-                imageHtml = `<div class="card-image" style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#555;font-size:2em;">📰</div>`;
+                imageHtml = `<div class="no-image">📰</div>`;
             }
 
             const summaryHtml = article.rewritten ? 
@@ -243,7 +244,7 @@
 
             html += `
                 <div class="article-card ${featuredClass}">
-                    ${imageHtml}
+                    <div class="card-image">${imageHtml}</div>
                     <div class="card-content">
                         <div class="tags">
                             <span class="source-tag">${article.source || 'News'}</span>
