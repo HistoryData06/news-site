@@ -11,7 +11,7 @@
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
 
         /* ===== TOP BAR ===== */
-        .top-bar{background:#1a1a1a;color:#aaa;padding:8px 0;font-size:0.7em;border-bottom:1px solid #333;display:none}
+        .top-bar{background:#1a1a1a;color:#aaa;padding:8px 0;font-size:0.7em;border-bottom:1px solid #333;display:block}
         .top-bar .inner{max-width:1100px;margin:0 auto;padding:0 15px;display:flex;justify-content:space-between;align-items:center}
         .top-bar .inner a{color:#aaa;text-decoration:none;margin-left:15px;transition:color .2s}
         .top-bar .inner a:hover{color:#fff}
@@ -95,8 +95,8 @@
 </head>
 <body>
 
-<!-- TOP BAR (hidden, but ready for future use) -->
-<div class="top-bar" style="display:block;">
+<!-- TOP BAR -->
+<div class="top-bar">
     <div class="inner">
         <span class="date" id="currentDate"></span>
         <div>
@@ -224,14 +224,18 @@
         }
 
         let html = '';
-        // Mark first article as featured (takes full width on larger screens)
         articles.forEach((article, index) => {
             const isFeatured = index === 0;
             const featuredClass = isFeatured ? 'featured' : '';
             const timeAgo = article.published ? timeSince(article.published) : '';
-            const imageHtml = article.image ? 
-                `<div class="card-image"><img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.style.display='none'"></div>` : 
-                `<div class="card-image" style="background:#f0f2f5;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:2em;">📰</div>`;
+            
+            // Image HTML
+            let imageHtml = '';
+            if (article.image) {
+                imageHtml = `<div class="card-image"><img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.style.display='none'"></div>`;
+            } else {
+                imageHtml = `<div class="card-image" style="background:#1a1a1a;display:flex;align-items:center;justify-content:center;color:#555;font-size:2em;">📰</div>`;
+            }
 
             const summaryHtml = article.rewritten ? 
                 `<span class="ai-label">✨ AI Rewritten:</span> ${article.summary}` : 
