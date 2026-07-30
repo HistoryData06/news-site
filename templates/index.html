@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>📰 News Today</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,sans-serif;background:#000;min-height:100vh;padding:20px;color:#fff}
+        .container{max-width:800px;margin:0 auto;padding:10px 0 30px}
+
+        .header{text-align:center;padding:30px 20px 25px;margin-bottom:30px;border-bottom:3px solid #FFD700}
+        .header h1{font-size:2.2em;font-weight:900;letter-spacing:6px;color:#FFD700;text-transform:uppercase}
+        .header .subtitle{color:#888;font-size:0.85em;letter-spacing:2px;margin-top:8px}
+        .header .stats{color:#555;font-size:0.75em;margin-top:6px}
+
+        .category-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;justify-content:center}
+        .category-filter button{padding:8px 18px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:20px;color:#888;cursor:pointer;transition:all .3s ease;font-size:0.8em}
+        .category-filter button.active{background:rgba(255,215,0,0.15);border-color:#FFD700;color:#FFD700}
+        .category-filter button:hover{background:rgba(255,215,0,0.1)}
+
+        .article-card{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:18px;border:1px solid rgba(255,215,0,0.08);transition:all .3s ease}
+        .article-card:hover{border-color:rgba(255,215,0,0.2);transform:translateY(-2px)}
+        .article-card .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:#FFD700;background:rgba(255,215,0,0.1);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+        .article-card .category-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:700;color:#888;background:rgba(255,255,255,0.05);margin-left:6px;text-transform:uppercase;letter-spacing:1px}
+        .article-card h2{color:#fff;font-size:1.1em;margin-bottom:8px;line-height:1.4}
+        .article-card h2 a{color:#fff;text-decoration:none;transition:color .3s ease}
+        .article-card h2 a:hover{color:#FFD700}
+        .article-card .summary{color:#aaa;font-size:0.9em;line-height:1.6;margin-bottom:10px}
+        .article-card .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.75em;color:#666}
+        .article-card .meta .source{color:#888}
+        .article-card .meta .time{color:#555}
+        .article-card .read-more{color:#FFD700;text-decoration:none;font-weight:600;transition:all .3s ease}
+        .article-card .read-more:hover{text-decoration:underline}
+        .article-card .article-image{margin-bottom:12px;border-radius:8px;overflow:hidden;max-height:200px;background:#1a1a1a}
+        .article-card .article-image img{width:100%;height:auto;max-height:200px;object-fit:cover}
+
+        .loading-state{text-align:center;padding:50px 20px;color:#666}
+        .spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(255,215,0,0.08);border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+        @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+
+        .refresh-btn{display:block;width:100%;padding:16px;background:#FFD700;border:none;border-radius:50px;color:#000;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:4px;margin-top:10px;transition:all .3s ease}
+        .refresh-btn:hover{background:#FFE44D;transform:translateY(-2px)}
+
+        .footer{text-align:center;color:#333;font-size:.7em;padding:30px 0 10px;border-top:1px solid rgba(255,215,0,0.04);margin-top:20px}
+
+        @media(max-width:480px){body{padding:12px}.header h1{font-size:1.6em}.category-filter{gap:5px}.category-filter button{font-size:0.65em;padding:5px 12px}.article-card{padding:14px}.article-card h2{font-size:0.95em}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📰 News Today</h1>
+        <div class="subtitle">Latest headlines from around the world</div>
+        <div class="stats" id="stats">Loading...</div>
+    </div>
+
+    <div class="category-filter" id="categoryFilter">
+        <button class="active" data-category="all">All</button>
+    </div>
+
+    <div id="newsContent">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading latest news...</p>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
+
+    <div class="footer">📰 News from multiple sources • Updated automatically</div>
+</div>
+
+<script>
+    let currentCategory = 'all';
+    let allArticles = [];
+
+    async function loadNews() {
+        const content = document.getElementById('newsContent');
+        content.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>`;
+
+        try {
+            const response = await fetch('/api/news');
+            const data = await response.json();
+            allArticles = data.articles || [];
+            
+            // Update stats
+            document.getElementById('stats').textContent = `📊 ${data.total} articles from ${data.sources} sources`;
+            
+            // Update categories
+            const categories = await fetch('/api/categories');
+            const catData = await categories.json();
+            updateCategories(catData.categories);
+            
+            renderNews(allArticles);
+        } catch (err) {
+            content.innerHTML = `
+                <div class="article-card" style="text-align:center;padding:40px;">
+                    <p style="color:#ff6b6b;">❌ Error loading news</p>
+                    <p style="color:#666;font-size:0.9em;">${err.message}</p>
+                    <button onclick="loadNews()" style="margin-top:12px;padding:8px 20px;background:#FFD700;border:none;border-radius:6px;color:#000;font-weight:bold;cursor:pointer;">Retry</button>
+                </div>
+            `;
+        }
+    }
+
+    function updateCategories(categories) {
+        const container = document.getElementById('categoryFilter');
+        // Keep the "All" button
+        container.innerHTML = `<button class="active" data-category="all">All</button>`;
+        
+        categories.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.dataset.category = cat;
+            btn.textContent = cat;
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#categoryFilter button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterNews(this.dataset.category);
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    function filterNews(category) {
+        currentCategory = category;
+        if (category === 'all') {
+            renderNews(allArticles);
+        } else {
+            const filtered = allArticles.filter(article => 
+                article.category === category
+            );
+            renderNews(filtered);
+        }
+    }
+
+    function renderNews(articles) {
+        const content = document.getElementById('newsContent');
+        
+        if (!articles || articles.length === 0) {
+            content.innerHTML = `<div class="article-card" style="text-align:center;padding:40px;"><p style="color:#666;">📭 No articles found</p></div>`;
+            return;
+        }
+
+        let html = '';
+        articles.forEach(article => {
+            const timeAgo = article.published ? timeSince(article.published) : '';
+            const imageHtml = article.image ? 
+                `<div class="article-image"><img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.style.display='none'"></div>` : '';
+
+            html += `
+                <div class="article-card">
+                    <div>
+                        <span class="source-tag">${article.source || 'News'}</span>
+                        <span class="category-tag">${article.category || 'General'}</span>
+                    </div>
+                    ${imageHtml}
+                    <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
+                    <div class="summary">${article.summary}</div>
+                    <div class="meta">
+                        <span class="source">📰 ${article.source || 'Unknown'}</span>
+                        <span class="time">${timeAgo}</span>
+                        <a href="${article.link}" target="_blank" class="read-more">Read full article →</a>
+                    </div>
+                </div>
+            `;
+        });
+
+        content.innerHTML = html;
+        document.querySelector('.footer').textContent = `📰 ${articles.length} articles • Updated automatically`;
+    }
+
+    function timeSince(dateString) {
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date)) return '';
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            const intervals = [
+                {label: 'year', seconds: 31536000},
+                {label: 'month', seconds: 2592000},
+                {label: 'day', seconds: 86400},
+                {label: 'hour', seconds: 3600},
+                {label: 'minute', seconds: 60}
+            ];
+            
+            for (const interval of intervals) {
+                const count = Math.floor(seconds / interval.seconds);
+                if (count >= 1) {
+                    return `${count} ${interval.label}${count > 1 ? 's' : ''} ago`;
+                }
+            }
+            return 'Just now';
+        } catch {
+            return '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadNews);
+</script>
+</body>
+</html>
