@@ -5,6 +5,7 @@ import feedparser
 import re
 from datetime import datetime
 import os
+import json
 
 app = Flask(__name__)
 CORS(app, origins=["https://news-site-klur.onrender.com", "http://localhost:5000", "*"])
@@ -25,9 +26,32 @@ NEWS_SOURCES = [
     {'name': 'BBC Entertainment', 'url': 'https://www.bbc.co.uk/news/entertainment_and_arts/rss.xml', 'category': 'Entertainment'},
 ]
 
+# ===== FALLBACK IMAGES =====
+FALLBACK_IMAGES = {
+    'World': 'https://images.unsplash.com/photo-1582528885623-1c6a5b5c8e4f?w=400&h=200&fit=crop&crop=center',
+    'Tech': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=200&fit=crop&crop=center',
+    'Business': 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=200&fit=crop&crop=center',
+    'Science': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=200&fit=crop&crop=center',
+    'Sports': 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=400&h=200&fit=crop&crop=center',
+    'Health': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=200&fit=crop&crop=center',
+    'Entertainment': 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=200&fit=crop&crop=center',
+}
+
 def clean_html(text):
     """Remove HTML tags from text"""
     return re.sub(r'<[^>]+>', '', text)
+
+def get_image_from_google(title):
+    """Try to get image using a free image API"""
+    try:
+        # Unsplash random image based on category or title
+        search_term = re.sub(r'[^\w\s]', '', title)[:30]
+        url = f"https://api.unsplash.com/photos/random?query={search_term}&orientation=landscape"
+        # Note: You would need an Unsplash API key for this
+        # For now, return None
+        return None
+    except:
+        return None
 
 def rewrite_article(title, summary):
     """Rewrite the article in a unique, engaging way using AI"""
@@ -76,6 +100,62 @@ Rewritten version:"""
         print(f"AI rewrite error: {e}")
         return summary
 
+def extract_image_from_entry(entry, category='General'):
+    """Extract image from RSS entry with multiple fallbacks"""
+    image = None
+    
+    # METHOD 1: media_thumbnail
+    if 'media_thumbnail' in entry and entry.media_thumbnail:
+        image = entry.media_thumbnail[0]['url']
+    
+    # METHOD 2: media_content
+    if not image and 'media_content' in entry and entry.media_content:
+        for content in entry.media_content:
+            if 'url' in content:
+                image = content['url']
+                break
+    
+    # METHOD 3: links with image types
+    if not image and 'links' in entry:
+        for link in entry.links:
+            if link.get('type', '').startswith('image/'):
+                image = link.get('href', '')
+                break
+    
+    # METHOD 4: Extract from summary HTML
+    if not image and 'summary' in entry:
+        img_match = re.search(r'<img[^>]+src="([^">]+)"', entry.summary)
+        if img_match:
+            image = img_match.group(1)
+    
+    # METHOD 5: Extract from content
+    if not image and 'content' in entry:
+        for content_item in entry.content:
+            img_match = re.search(r'<img[^>]+src="([^">]+)"', content_item.value)
+            if img_match:
+                image = img_match.group(1)
+                break
+    
+    # METHOD 6: Use specific RSS feed image URLs
+    if not image:
+        source_name = entry.get('source', {}).get('title', '')
+        if 'bbc' in source_name.lower():
+            image = 'https://ichef.bbci.co.uk/news/1024/branded_news/1234/news.png'
+        elif 'cnn' in source_name.lower():
+            image = 'https://cdn.cnn.com/cnnnext/dam/assets/210125121943-cnn-logo-large-2021.jpg'
+        elif 'reuters' in source_name.lower():
+            image = 'https://www.reuters.com/pf/resources/images/reuters-logo.png'
+        elif 'guardian' in source_name.lower():
+            image = 'https://assets.guim.co.uk/images/logo.png'
+        elif 'aljazeera' in source_name.lower():
+            image = 'https://www.aljazeera.com/favicon_aje.ico'
+    
+    # METHOD 7: Use category-specific fallback
+    if not image:
+        image = FALLBACK_IMAGES.get(category, FALLBACK_IMAGES['World'])
+    
+    return image
+
 def get_articles():
     """Fetch articles from all news sources with better image extraction"""
     all_articles = []
@@ -89,54 +169,8 @@ def get_articles():
                 summary = clean_html(entry.get('summary', ''))
                 summary = summary[:250] + '...' if len(summary) > 250 else summary
                 
-                # ===== BETTER IMAGE EXTRACTION =====
-                image = ''
-                
-                # Try 1: media_thumbnail (most common)
-                if 'media_thumbnail' in entry and entry.media_thumbnail:
-                    image = entry.media_thumbnail[0]['url']
-                
-                # Try 2: media_content
-                elif 'media_content' in entry and entry.media_content:
-                    for content in entry.media_content:
-                        if 'url' in content:
-                            image = content['url']
-                            break
-                
-                # Try 3: links with image types
-                elif 'links' in entry:
-                    for link in entry.links:
-                        if link.get('type', '').startswith('image/'):
-                            image = link.get('href', '')
-                            break
-                
-                # Try 4: Extract from summary HTML
-                if not image and 'summary' in entry:
-                    img_match = re.search(r'<img[^>]+src="([^">]+)"', entry.summary)
-                    if img_match:
-                        image = img_match.group(1)
-                
-                # Try 5: Extract from content
-                if not image and 'content' in entry:
-                    for content_item in entry.content:
-                        img_match = re.search(r'<img[^>]+src="([^">]+)"', content_item.value)
-                        if img_match:
-                            image = img_match.group(1)
-                            break
-                
-                # Try 6: Use a default image if still no image
-                if not image:
-                    # Use a category-specific default image
-                    category_images = {
-                        'World': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🌍+World+News',
-                        'Tech': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=💻+Tech+News',
-                        'Business': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=📈+Business',
-                        'Science': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🔬+Science',
-                        'Sports': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=⚽+Sports',
-                        'Health': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🏥+Health',
-                        'Entertainment': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🎬+Entertainment',
-                    }
-                    image = category_images.get(source['category'], 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=📰+News')
+                # Get image with multiple methods
+                image = extract_image_from_entry(entry, source['category'])
                 
                 # Get published date
                 published = entry.get('published', '')
