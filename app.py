@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://news-site-klur.onrender.com", "http://localhost:5000", "*"])
 
 # ===== NEWS SOURCES =====
 NEWS_SOURCES = [
@@ -77,7 +77,7 @@ Rewritten version:"""
         return summary
 
 def get_articles():
-    """Fetch articles from all news sources"""
+    """Fetch articles from all news sources with better image extraction"""
     all_articles = []
     
     for source in NEWS_SOURCES:
@@ -89,12 +89,54 @@ def get_articles():
                 summary = clean_html(entry.get('summary', ''))
                 summary = summary[:250] + '...' if len(summary) > 250 else summary
                 
-                # Get image if available
+                # ===== BETTER IMAGE EXTRACTION =====
                 image = ''
-                if 'media_thumbnail' in entry:
+                
+                # Try 1: media_thumbnail (most common)
+                if 'media_thumbnail' in entry and entry.media_thumbnail:
                     image = entry.media_thumbnail[0]['url']
+                
+                # Try 2: media_content
                 elif 'media_content' in entry and entry.media_content:
-                    image = entry.media_content[0].get('url', '')
+                    for content in entry.media_content:
+                        if 'url' in content:
+                            image = content['url']
+                            break
+                
+                # Try 3: links with image types
+                elif 'links' in entry:
+                    for link in entry.links:
+                        if link.get('type', '').startswith('image/'):
+                            image = link.get('href', '')
+                            break
+                
+                # Try 4: Extract from summary HTML
+                if not image and 'summary' in entry:
+                    img_match = re.search(r'<img[^>]+src="([^">]+)"', entry.summary)
+                    if img_match:
+                        image = img_match.group(1)
+                
+                # Try 5: Extract from content
+                if not image and 'content' in entry:
+                    for content_item in entry.content:
+                        img_match = re.search(r'<img[^>]+src="([^">]+)"', content_item.value)
+                        if img_match:
+                            image = img_match.group(1)
+                            break
+                
+                # Try 6: Use a default image if still no image
+                if not image:
+                    # Use a category-specific default image
+                    category_images = {
+                        'World': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🌍+World+News',
+                        'Tech': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=💻+Tech+News',
+                        'Business': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=📈+Business',
+                        'Science': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🔬+Science',
+                        'Sports': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=⚽+Sports',
+                        'Health': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🏥+Health',
+                        'Entertainment': 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=🎬+Entertainment',
+                    }
+                    image = category_images.get(source['category'], 'https://via.placeholder.com/400x200/1a1a1a/ff4a4a?text=📰+News')
                 
                 # Get published date
                 published = entry.get('published', '')
@@ -122,12 +164,10 @@ def get_articles():
 # ===== ROUTES =====
 @app.route('/')
 def index():
-    """Serve the main page"""
     return render_template('index.html')
 
 @app.route('/api/news')
 def api_news():
-    """API endpoint for news with AI-rewritten articles"""
     articles = get_articles()
     
     # Rewrite the first 5 articles
@@ -147,7 +187,6 @@ def api_news():
 
 @app.route('/api/categories')
 def api_categories():
-    """Get all categories"""
     categories = list(set(s['category'] for s in NEWS_SOURCES))
     return jsonify({'categories': sorted(categories)})
 
@@ -155,7 +194,6 @@ def api_categories():
 def health():
     return jsonify({'status': 'ok', 'message': 'News API is running!'})
 
-# ===== START SERVER =====
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
