@@ -721,7 +721,7 @@
         updateSavedUI();
     }
 
-        // ===== ARTICLE POPUP (Clean - No Source Info) =====
+            // ===== ARTICLE POPUP (Real Article Rewrite) =====
     function openArticlePopup(title, summary, source, category) {
         const overlay = document.getElementById('articleOverlay');
         const body = document.getElementById('articleBody');
@@ -730,11 +730,15 @@
         body.innerHTML = `
             <div class="loading-text">
                 <div class="spinner"></div>
-                <p>📖 Loading article...</p>
+                <p>✍️ Rewriting article...</p>
             </div>
         `;
         
-        fetch('/api/article?title=' + encodeURIComponent(title))
+        // Send both title and summary to the API
+        const encodedTitle = encodeURIComponent(title);
+        const encodedSummary = encodeURIComponent(summary || '');
+        
+        fetch('/api/article?title=' + encodedTitle + '&summary=' + encodedSummary)
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
@@ -745,7 +749,7 @@
                 const content = data.content || summary || 'No content available';
                 const wordCount = data.word_count || content.split(' ').length;
                 
-                // Clean the content - remove any markdown
+                // Clean the content
                 let cleanContent = content;
                 cleanContent = cleanContent.replace(/\*\*/g, '');
                 cleanContent = cleanContent.replace(/#{1,6}\s*/g, '');
@@ -776,7 +780,7 @@
                 }
                 
                 html += `</div>`;
-                html += `<div class="article-source">📖 All content available here • No external links needed</div>`;
+                html += `<div class="article-source">✍️ AI Rewritten • No external links needed</div>`;
                 body.innerHTML = html;
             })
             .catch(err => {
