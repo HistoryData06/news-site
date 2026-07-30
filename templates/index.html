@@ -26,6 +26,8 @@
             --read-time-text: #888888;
             --source-tag-bg: #fff0f0;
             --source-tag-text: #ff4a4a;
+            --breaking-bg: #cc0000;
+            --breaking-text: #ffffff;
         }
 
         /* ===== DARK MODE VARIABLES ===== */
@@ -47,12 +49,26 @@
             --read-time-text: #aaaaaa;
             --source-tag-bg: #2a1a1a;
             --source-tag-text: #ff6a6a;
+            --breaking-bg: #990000;
+            --breaking-text: #ffffff;
         }
 
         /* ===== RESET & BASE ===== */
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
+
+        /* ===== BREAKING NEWS BANNER ===== */
+        .breaking-banner{background:var(--breaking-bg);color:var(--breaking-text);padding:10px 20px;display:none;align-items:center;gap:15px;position:sticky;top:0;z-index:1000;box-shadow:0 2px 15px rgba(204,0,0,0.3);transition:all 0.3s ease}
+        .breaking-banner.show{display:flex}
+        .breaking-banner .breaking-label{background:rgba(255,255,255,0.2);padding:3px 15px;border-radius:20px;font-size:0.65em;font-weight:700;text-transform:uppercase;letter-spacing:2px;white-space:nowrap;animation:pulse 1.5s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .breaking-banner .breaking-text{flex:1;font-size:0.9em;font-weight:500}
+        .breaking-banner .breaking-text a{color:#fff;text-decoration:underline;font-weight:700}
+        .breaking-banner .breaking-close{background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:1.2em;cursor:pointer;padding:5px 12px;border-radius:20px;transition:background 0.3s ease;font-weight:700;white-space:nowrap}
+        .breaking-banner .breaking-close:hover{background:rgba(255,255,255,0.25)}
+        .breaking-banner .breaking-close .icon{display:inline-block;transition:transform 0.3s ease}
+        .breaking-banner .breaking-close:hover .icon{transform:rotate(90deg)}
 
         /* ===== TOP BAR ===== */
         .top-bar{background:var(--bg-topbar);color:#aaa;padding:8px 0;font-size:0.7em;border-bottom:1px solid #333;display:block;transition:background 0.3s ease}
@@ -141,7 +157,11 @@
         .refresh-btn{max-width:100%}
         .header .header-right{gap:10px}
         .theme-toggle{padding:4px 10px;font-size:0.9em}
-        .theme-toggle .label{display:none}}
+        .theme-toggle .label{display:none}
+        .breaking-banner{padding:8px 12px;flex-wrap:wrap;gap:8px}
+        .breaking-banner .breaking-text{font-size:0.8em;order:3;flex-basis:100%}
+        .breaking-banner .breaking-label{font-size:0.55em}
+        .breaking-banner .breaking-close{padding:3px 10px;font-size:1em}}
         @media(max-width:480px){.header .logo{font-size:1.3em}
         .header .subtitle{font-size:0.6em}
         .article-card .card-image{height:140px}
@@ -149,6 +169,17 @@
     </style>
 </head>
 <body>
+
+<!-- ===== BREAKING NEWS BANNER ===== -->
+<div class="breaking-banner" id="breakingBanner">
+    <span class="breaking-label">🔴 BREAKING</span>
+    <span class="breaking-text" id="breakingText">
+        <a href="#" target="_blank">Click here for the latest breaking news</a>
+    </span>
+    <button class="breaking-close" onclick="closeBreaking()">
+        <span class="icon">✕</span>
+    </button>
+</div>
 
 <!-- TOP BAR -->
 <div class="top-bar">
@@ -202,6 +233,35 @@
 </div>
 
 <script>
+    // ===== BREAKING NEWS =====
+    function showBreakingNews(title, link) {
+        const banner = document.getElementById('breakingBanner');
+        const text = document.getElementById('breakingText');
+        
+        // Check if user has dismissed this specific breaking news
+        const dismissed = localStorage.getItem('breaking_dismissed');
+        if (dismissed === title) {
+            return;
+        }
+        
+        text.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
+        banner.classList.add('show');
+    }
+
+    function closeBreaking() {
+        const banner = document.getElementById('breakingBanner');
+        const text = document.getElementById('breakingText');
+        const title = text.textContent.trim();
+        
+        banner.classList.remove('show');
+        // Save dismissed state so it doesn't show again
+        localStorage.setItem('breaking_dismissed', title);
+        // Remove after 1 hour so new breaking news can show
+        setTimeout(() => {
+            localStorage.removeItem('breaking_dismissed');
+        }, 3600000);
+    }
+
     // ===== DARK MODE =====
     function toggleTheme() {
         const body = document.body;
@@ -270,6 +330,20 @@
             updateCategories(catData.categories);
             
             renderNews(allArticles);
+            
+            // ===== CHECK FOR BREAKING NEWS =====
+            // Check if any article has "breaking" or "just in" in title
+            const breakingKeywords = ['breaking', 'just in', 'urgent', 'breaking news', 'live', 'update'];
+            for (const article of allArticles) {
+                const title = article.title.toLowerCase();
+                for (const keyword of breakingKeywords) {
+                    if (title.includes(keyword)) {
+                        showBreakingNews(article.title, article.link);
+                        break;
+                    }
+                }
+            }
+            
         } catch (err) {
             grid.innerHTML = `
                 <div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;">
