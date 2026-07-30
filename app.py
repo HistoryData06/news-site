@@ -108,14 +108,50 @@ def get_articles():
     return all_articles
 
 def generate_fallback_article(title, year):
+    """Generate a clean, varied fallback article as plain text"""
     year_text = f" in {year}" if year else ""
-    article = f"{title} is a significant historical event{year_text} that represents an important moment in history. "
-    if year:
-        article += f"The year {year} was a period of great change and development, and this event played a crucial role in shaping the world we live in today. "
-    article += "Historians continue to study this event to understand its causes, consequences, and lasting impact on society. "
-    article += "Understanding this event requires looking at the broader historical context. The political, social, and economic conditions of the time created the environment in which this event could occur. "
-    article += "This event is significant because it influenced subsequent historical developments and shaped the course of history. Its legacy can still be seen in modern institutions, cultural practices, and international relations. "
-    article += "The lasting impact of this event serves as a reminder of how historical moments continue to influence our present and future. By studying such events, we gain valuable insights into human nature, society, and the forces that shape our world."
+    
+    openings = [
+        f"The events surrounding {title}{year_text} represent a fascinating chapter in history.",
+        f"{title}{year_text} stands as one of the most significant historical moments of its era.",
+        f"History was forever changed by {title}{year_text}, a moment that continues to resonate today.",
+        f"The story of {title}{year_text} is one that historians have studied for generations.",
+        f"{title}{year_text} marks a turning point that shaped the world we know today.",
+        f"Few historical events have had the lasting impact of {title}{year_text}."
+    ]
+    
+    context = [
+        f"This event took place during a time of great transformation, when the world was shifting in ways that would define the modern age.",
+        f"The circumstances leading to this moment were shaped by the unique political and social dynamics of the period.",
+        f"Understanding this event requires examining the broader historical forces that were at work during this pivotal time.",
+        f"The world was changing rapidly when this event occurred, setting the stage for what would follow.",
+        f"This historical moment emerged from a complex set of circumstances that historians continue to explore."
+    ]
+    
+    significance = [
+        f"What makes this event particularly important is how it influenced everything that came after it.",
+        f"The significance of this moment cannot be overstated, as it set in motion developments that would echo through history.",
+        f"This historical milestone is remembered not just for what happened, but for how it changed the course of history.",
+        f"The impact of this event was felt far beyond its immediate time and place.",
+        f"This event stands as a reminder of how a single moment can reshape the world."
+    ]
+    
+    legacy = [
+        f"Today, we can still see the lasting impact of this event in our world.",
+        f"The legacy of this moment continues to shape how we understand history and its influence on modern life.",
+        f"This event remains a powerful reminder of how history continues to influence our present and future.",
+        f"The echoes of this historical moment can still be felt in today's world.",
+        f"Understanding this event helps us make sense of the world we live in today."
+    ]
+    
+    closing = [
+        f"As we look back on {title}, we gain a deeper appreciation for how history shapes our modern world.",
+        f"The story of {title} continues to inspire and inform us today.",
+        f"This chapter in history reminds us of the enduring power of human events."
+    ]
+    
+    article = random.choice(openings) + " " + random.choice(context) + " " + random.choice(significance) + " " + random.choice(legacy) + " " + random.choice(closing)
+    
     return article
 
 # ===== ROUTES =====
