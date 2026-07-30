@@ -34,6 +34,7 @@
             --save-btn-active: #ff4a4a;
             --trending-bg: rgba(255,74,74,0.05);
             --trending-border: rgba(255,74,74,0.15);
+            --related-bg: rgba(0,0,0,0.02);
         }
         body.dark-mode {
             --bg-body: #0d0d0d;
@@ -62,12 +63,25 @@
             --save-btn-active: #ff4a4a;
             --trending-bg: rgba(255,74,74,0.08);
             --trending-border: rgba(255,74,74,0.2);
+            --related-bg: rgba(255,255,255,0.03);
         }
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
         
-        /* ===== TRENDING TOPICS ===== */
+        /* ===== RELATED ARTICLES ===== */
+        .related-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-top:25px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
+        .related-container .related-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+        .related-container .related-header h3{font-size:0.85em;font-weight:700;color:var(--text-primary);letter-spacing:0.5px}
+        .related-container .related-header h3 span{color:#ff4a4a}
+        .related-container .related-list{display:flex;flex-direction:column;gap:8px}
+        .related-container .related-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:var(--related-bg);transition:all 0.3s ease;cursor:pointer;text-decoration:none;color:var(--text-primary);border:1px solid transparent}
+        .related-container .related-item:hover{background:var(--trending-bg);border-color:var(--trending-border);transform:translateX(4px)}
+        .related-container .related-item .related-index{color:var(--text-muted);font-size:0.7em;font-weight:700;min-width:24px}
+        .related-container .related-item .related-title{font-size:0.85em;font-weight:500;color:var(--text-primary);flex:1}
+        .related-container .related-item .related-source{font-size:0.65em;color:var(--text-muted);white-space:nowrap}
+        .related-container .related-empty{color:var(--text-muted);font-size:0.8em;padding:10px 0;text-align:center}
+
         .trending-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .trending-container .trending-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
         .trending-container .trending-header .icon{font-size:1.3em}
@@ -166,6 +180,9 @@
         .search-container input{font-size:0.85em;padding:8px 12px}
         .trending-container{padding:14px 16px}
         .trending-container .trending-topics .topic{font-size:0.65em;padding:4px 10px}
+        .related-container{padding:14px 16px}
+        .related-container .related-item{padding:8px 10px}
+        .related-container .related-item .related-title{font-size:0.8em}
         .category-filter{padding:8px 12px;gap:4px;justify-content:center}
         .category-filter button{font-size:0.65em;padding:5px 12px}
         .article-card .card-image{height:160px}
@@ -212,7 +229,7 @@
 </div>
 <!-- MAIN CONTAINER -->
 <div class="container">
-    <!-- ===== TRENDING TOPICS ===== -->
+    <!-- TRENDING TOPICS -->
     <div class="trending-container" id="trendingContainer">
         <div class="trending-header">
             <span class="icon">🔥</span>
@@ -239,11 +256,80 @@
     <div class="news-grid" id="newsContent">
         <div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>
     </div>
+    <!-- RELATED ARTICLES -->
+    <div class="related-container" id="relatedContainer">
+        <div class="related-header">
+            <h3>📰 Related <span>Articles</span></h3>
+        </div>
+        <div class="related-list" id="relatedList">
+            <div class="related-empty">Click any article to see related news</div>
+        </div>
+    </div>
     <!-- REFRESH -->
     <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
     <div class="footer"><span class="heart">❤</span> NewsPro • All sources credited</div>
 </div>
-<script>    // ===== TRENDING TOPICS =====
+<script>    // ===== RELATED ARTICLES =====
+    let relatedArticles = [];
+
+    function findRelatedArticles(article, allArticles, limit = 4) {
+        if (!article) return [];
+        const keywords = article.title.split(' ')
+            .filter(w => w.length > 3)
+            .map(w => w.toLowerCase());
+        
+        const scored = allArticles.map(a => {
+            if (a.link === article.link) return { ...a, score: -1 };
+            const titleWords = a.title.toLowerCase().split(' ');
+            let score = 0;
+            keywords.forEach(kw => {
+                if (titleWords.some(w => w.includes(kw))) score += 2;
+                if (a.summary && a.summary.toLowerCase().includes(kw)) score += 1;
+            });
+            return { ...a, score };
+        });
+        
+        return scored
+            .filter(a => a.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit);
+    }
+
+    function renderRelatedArticles(related) {
+        const container = document.getElementById('relatedList');
+        if (!related || related.length === 0) {
+            container.innerHTML = '<div class="related-empty">No related articles found</div>';
+            return;
+        }
+        let html = '';
+        related.forEach((article, index) => {
+            html += `
+                <a href="${article.link}" target="_blank" class="related-item">
+                    <span class="related-index">${index + 1}</span>
+                    <span class="related-title">${article.title}</span>
+                    <span class="related-source">${article.source || ''}</span>
+                </a>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    function updateRelatedForArticle(article) {
+        if (!article) {
+            document.getElementById('relatedList').innerHTML = '<div class="related-empty">Click any article to see related news</div>';
+            return;
+        }
+        const related = findRelatedArticles(article, allArticles);
+        renderRelatedArticles(related);
+        // Store for reference
+        relatedArticles = related;
+    }
+
+    // ===== MODIFY RENDER NEWS TO ADD CLICK =====
+    // Add this inside renderNews function for each article
+    // We'll add onclick to the article card
+    
+    // ===== TRENDING TOPICS =====
     let trendingTopics = [];
     let selectedTrending = null;
 
@@ -254,7 +340,6 @@
         articles.forEach(article => {
             const title = article.title || '';
             const words = title.split(' ');
-            // Extract keywords (skip stop words and short words)
             const keywords = words.filter(w => w.length > 3 && !stopWords.includes(w.toLowerCase()));
             keywords.forEach(word => {
                 const clean = word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
@@ -264,7 +349,6 @@
             });
         });
         
-        // Sort by frequency and get top 10
         const sorted = Object.entries(topicMap)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 10);
@@ -284,7 +368,6 @@
             container.innerHTML = '<div class="trending-empty">No trending topics yet</div>';
             return;
         }
-        
         const emojis = ['🔥', '💥', '⭐', '🚀', '📈', '⚡', '🎯', '💡', '🌟', '💪'];
         let html = '';
         topics.forEach((topic, index) => {
@@ -304,7 +387,6 @@
     function filterByTrending(word) {
         if (selectedTrending === word) {
             selectedTrending = null;
-            // Clear search and show all
             document.getElementById('searchInput').value = '';
             searchQuery = '';
             document.getElementById('searchClear').classList.remove('show');
@@ -312,7 +394,6 @@
             renderTrendingTopics(trendingTopics);
             return;
         }
-        
         selectedTrending = word;
         document.getElementById('searchInput').value = word;
         searchQuery = word;
@@ -374,7 +455,7 @@
         });
     }
 
-    // ===== SEARCH =====
+        // ===== SEARCH =====
     let searchQuery = '';
     let allArticlesCache = [];
     let currentView = 'all';
@@ -388,7 +469,6 @@
             clearBtn.classList.remove('show');
         }
         renderCurrentView();
-        // Update trending highlight
         if (selectedTrending) {
             const topics = document.querySelectorAll('.trending-topics .topic');
             topics.forEach(t => {
@@ -508,7 +588,6 @@
             document.getElementById('articleCount').textContent = data.total || 0;
             document.getElementById('searchResultCount').textContent = data.total || 0;
             
-                        // ===== EXTRACT TRENDING TOPICS =====
             const topics = extractTrendingTopics(allArticles);
             renderTrendingTopics(topics);
             
@@ -518,6 +597,9 @@
             currentView = 'all';
             renderCurrentView();
             updateSavedUI();
+            
+            // Clear related articles
+            document.getElementById('relatedList').innerHTML = '<div class="related-empty">Click any article to see related news</div>';
         } catch (err) {
             grid.innerHTML = `
                 <div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;">
@@ -612,8 +694,11 @@
                 highlightedTitle = (article.title || '').replace(regex, '<mark style="background:#ff4a4a;color:#fff;padding:0 4px;border-radius:3px;">$1</mark>');
             }
 
+            // Add onclick to the article card for related articles
+            const articleJson = JSON.stringify(article).replace(/"/g, '&quot;');
+
             html += `
-                <div class="article-card ${featuredClass}" data-link="${article.link}">
+                <div class="article-card ${featuredClass}" data-link="${article.link}" onclick="updateRelatedForArticle(${articleJson})">
                     <div class="card-image">
                         ${imageHtml}
                         ${saved ? `<div class="saved-badge"><span class="icon">⭐</span> Saved</div>` : ''}
@@ -625,7 +710,7 @@
                             ${article.rewritten ? '<span class="ai-badge">✨ AI</span>' : ''}
                             ${readTimeText}
                             <span class="spacer"></span>
-                            <button class="save-btn ${saved ? 'saved' : ''}" data-link="${article.link}" onclick="toggleSave({
+                            <button class="save-btn ${saved ? 'saved' : ''}" data-link="${article.link}" onclick="event.stopPropagation();toggleSave({
                                 title: '${article.title.replace(/'/g, "\\'")}',
                                 link: '${article.link}',
                                 source: '${article.source || 'News'}',
@@ -637,12 +722,12 @@
                                 ${saved ? '⭐' : '☆'}
                             </button>
                         </div>
-                        <h2><a href="${article.link}" target="_blank">${highlightedTitle}</a></h2>
+                        <h2><a href="${article.link}" target="_blank" onclick="event.stopPropagation();">${highlightedTitle}</a></h2>
                         <div class="summary">${summaryHtml}</div>
                         <div class="meta">
                             <span class="source">📰 ${article.source || 'Unknown'}</span>
                             <span class="time">${timeAgo}</span>
-                            <a href="${article.link}" target="_blank" class="read-more">Read full article →</a>
+                            <a href="${article.link}" target="_blank" class="read-more" onclick="event.stopPropagation();">Read full article →</a>
                         </div>
                     </div>
                 </div>
