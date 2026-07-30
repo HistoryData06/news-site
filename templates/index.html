@@ -35,6 +35,8 @@
             --trending-bg: rgba(255,74,74,0.05);
             --trending-border: rgba(255,74,74,0.15);
             --related-bg: rgba(0,0,0,0.02);
+            --live-bg: #cc0000;
+            --live-text: #ffffff;
         }
         body.dark-mode {
             --bg-body: #0d0d0d;
@@ -64,29 +66,38 @@
             --trending-bg: rgba(255,74,74,0.08);
             --trending-border: rgba(255,74,74,0.2);
             --related-bg: rgba(255,255,255,0.03);
+            --live-bg: #990000;
+            --live-text: #ffffff;
         }
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
         
-        /* ===== RELATED ARTICLES ===== */
-        .related-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-top:25px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
-        .related-container .related-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-        .related-container .related-header h3{font-size:0.85em;font-weight:700;color:var(--text-primary);letter-spacing:0.5px}
-        .related-container .related-header h3 span{color:#ff4a4a}
-        .related-container .related-list{display:flex;flex-direction:column;gap:8px}
-        .related-container .related-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:var(--related-bg);transition:all 0.3s ease;cursor:pointer;text-decoration:none;color:var(--text-primary);border:1px solid transparent}
-        .related-container .related-item:hover{background:var(--trending-bg);border-color:var(--trending-border);transform:translateX(4px)}
-        .related-container .related-item .related-index{color:var(--text-muted);font-size:0.7em;font-weight:700;min-width:24px}
-        .related-container .related-item .related-title{font-size:0.85em;font-weight:500;color:var(--text-primary);flex:1}
-        .related-container .related-item .related-source{font-size:0.65em;color:var(--text-muted);white-space:nowrap}
-        .related-container .related-empty{color:var(--text-muted);font-size:0.8em;padding:10px 0;text-align:center}
+        /* ===== LIVE UPDATE BANNER ===== */
+        .live-banner{background:var(--live-bg);color:var(--live-text);padding:8px 20px;display:none;align-items:center;gap:15px;position:sticky;top:0;z-index:999;box-shadow:0 2px 15px rgba(204,0,0,0.3);transition:all 0.3s ease}
+        .live-banner.show{display:flex}
+        .live-banner .live-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse-dot 1s ease-in-out infinite;flex-shrink:0}
+        @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+        .live-banner .live-label{font-weight:700;font-size:0.7em;text-transform:uppercase;letter-spacing:2px;background:rgba(255,255,255,0.15);padding:2px 12px;border-radius:20px;white-space:nowrap}
+        .live-banner .live-text{flex:1;font-size:0.85em;font-weight:400;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+        .live-banner .live-text a{color:#fff;text-decoration:underline;font-weight:600}
+        .live-banner .live-count{background:rgba(255,255,255,0.15);padding:2px 12px;border-radius:20px;font-size:0.7em;font-weight:700;white-space:nowrap}
+        .live-banner .live-close{background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:1.2em;cursor:pointer;padding:0 8px;border-radius:20px;transition:background 0.3s ease;font-weight:700}
+        .live-banner .live-close:hover{background:rgba(255,255,255,0.2)}
+        
+        /* ===== LIVE INDICATOR IN HEADER ===== */
+        .live-indicator{display:none;align-items:center;gap:6px;background:rgba(204,0,0,0.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(204,0,0,0.2);font-size:0.7em;color:#cc0000;font-weight:600}
+        .live-indicator .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cc0000;animation:pulse-dot 1s ease-in-out infinite}
+        .live-indicator.active{display:flex}
 
         .trending-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
-        .trending-container .trending-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+        .trending-container .trending-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
         .trending-container .trending-header .icon{font-size:1.3em}
         .trending-container .trending-header h3{font-size:0.9em;font-weight:700;color:var(--text-primary);letter-spacing:0.5px}
         .trending-container .trending-header h3 span{color:#ff4a4a}
+        .trending-container .trending-header .live-indicator-header{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:0.65em;color:var(--text-muted)}
+        .trending-container .trending-header .live-indicator-header .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4caf50}
+        .trending-container .trending-header .live-indicator-header .dot.updating{background:#ff4a4a;animation:pulse-dot 0.5s ease-in-out 3}
         .trending-container .trending-topics{display:flex;flex-wrap:wrap;gap:8px}
         .trending-container .trending-topics .topic{background:var(--trending-bg);border:1px solid var(--trending-border);border-radius:20px;padding:6px 14px;font-size:0.75em;color:var(--text-secondary);cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;gap:6px;font-weight:500}
         .trending-container .trending-topics .topic:hover{background:rgba(255,74,74,0.15);transform:translateY(-2px)}
@@ -95,7 +106,7 @@
         .trending-container .trending-topics .topic.active{background:#ff4a4a;color:#fff;border-color:#ff4a4a}
         .trending-container .trending-topics .topic.active .count{background:#fff;color:#ff4a4a}
         .trending-container .trending-empty{color:var(--text-muted);font-size:0.8em;padding:8px 0;text-align:center}
-
+        
         .search-container{background:var(--bg-card);border-radius:10px;padding:15px 20px;margin-bottom:22px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
         .search-container .search-wrapper{display:flex;align-items:center;gap:12px;position:relative}
         .search-container .search-icon{font-size:1.2em;color:var(--text-muted)}
@@ -120,6 +131,9 @@
         .header .header-right{display:flex;align-items:center;gap:12px}
         .header .header-right .stats{color:var(--text-muted);font-size:0.75em;background:var(--tag-bg);padding:6px 16px;border-radius:20px;border:1px solid var(--border-color);transition:all 0.3s ease}
         .header .header-right .stats span{color:var(--text-primary);font-weight:700;transition:color 0.3s ease}
+        .header .header-right .live-indicator{display:none;align-items:center;gap:6px;background:rgba(204,0,0,0.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(204,0,0,0.2);font-size:0.7em;color:#cc0000;font-weight:600}
+        .header .header-right .live-indicator .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cc0000;animation:pulse-dot 1s ease-in-out infinite}
+        .header .header-right .live-indicator.active{display:flex}
         .header .header-right .theme-toggle{background:var(--tag-bg);border:1px solid var(--border-color);border-radius:30px;padding:6px 14px;cursor:pointer;font-size:1.1em;transition:all 0.3s ease;color:var(--text-primary);display:flex;align-items:center;gap:8px}
         .header .header-right .theme-toggle:hover{transform:scale(1.05)}
         .category-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:30px;background:var(--bg-card);padding:10px 18px;border-radius:8px;box-shadow:0 2px 8px var(--shadow-color);border:1px solid var(--border-color);transition:all 0.3s ease}
@@ -134,7 +148,10 @@
         .news-grid .featured{grid-column:1 / -1}}
         @media(min-width:1024px){.news-grid{grid-template-columns:repeat(3,1fr)}
         .news-grid .featured{grid-column:1 / -1}}
-        .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color);position:relative}
+        .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color);position:relative;animation:fadeIn .5s ease forwards}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .article-card.new-article{animation:slideIn .5s ease forwards}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
         .article-card:hover{box-shadow:0 8px 30px var(--shadow-hover);transform:translateY(-4px);border-color:var(--text-light)}
         .article-card .card-image{width:100%;height:200px;overflow:hidden;background:#1a1a1a;position:relative}
         .article-card .card-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
@@ -142,6 +159,8 @@
         .article-card .card-image .no-image{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555;font-size:2.5em;background:#1a1a1a}
         .article-card .card-image .saved-badge{position:absolute;top:12px;right:12px;background:#ff4a4a;color:#fff;padding:4px 10px;border-radius:20px;font-size:0.6em;font-weight:700;text-transform:uppercase;letter-spacing:1px;box-shadow:0 2px 10px rgba(255,74,74,0.3)}
         .article-card .card-image .saved-badge .icon{font-size:0.9em;margin-right:4px}
+        .article-card .card-image .new-badge{position:absolute;top:12px;left:12px;background:#4caf50;color:#fff;padding:4px 10px;border-radius:20px;font-size:0.6em;font-weight:700;text-transform:uppercase;letter-spacing:1px;animation:pulse-badge 1.5s ease-in-out infinite}
+        @keyframes pulse-badge{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.95)}}
         .article-card .card-content{padding:18px 20px 20px}
         .article-card .card-content .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;align-items:center}
         .article-card .card-content .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:var(--source-tag-text);background:var(--source-tag-bg);text-transform:uppercase;letter-spacing:0.5px;transition:all 0.3s ease}
@@ -170,6 +189,17 @@
         @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
         .refresh-btn{display:block;width:100%;max-width:280px;margin:35px auto 0;padding:14px 30px;background:#ff4a4a;border:none;border-radius:50px;color:#fff;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:2px;transition:all .3s ease;font-size:0.85em;box-shadow:0 4px 15px rgba(255,74,74,0.2)}
         .refresh-btn:hover{background:#cc0000;transform:translateY(-2px);box-shadow:0 8px 25px rgba(255,74,74,0.3)}
+        .related-container{background:var(--bg-card);border-radius:10px;padding:18px 20px;margin-top:25px;border:1px solid var(--border-color);transition:all 0.3s ease;box-shadow:0 2px 8px var(--shadow-color)}
+        .related-container .related-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+        .related-container .related-header h3{font-size:0.85em;font-weight:700;color:var(--text-primary);letter-spacing:0.5px}
+        .related-container .related-header h3 span{color:#ff4a4a}
+        .related-container .related-list{display:flex;flex-direction:column;gap:8px}
+        .related-container .related-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:var(--related-bg);transition:all 0.3s ease;cursor:pointer;text-decoration:none;color:var(--text-primary);border:1px solid transparent}
+        .related-container .related-item:hover{background:var(--trending-bg);border-color:var(--trending-border);transform:translateX(4px)}
+        .related-container .related-item .related-index{color:var(--text-muted);font-size:0.7em;font-weight:700;min-width:24px}
+        .related-container .related-item .related-title{font-size:0.85em;font-weight:500;color:var(--text-primary);flex:1}
+        .related-container .related-item .related-source{font-size:0.65em;color:var(--text-muted);white-space:nowrap}
+        .related-container .related-empty{color:var(--text-muted);font-size:0.8em;padding:10px 0;text-align:center}
         .footer{text-align:center;color:var(--text-light);font-size:.7em;padding:35px 0 10px;border-top:1px solid var(--border-color);margin-top:30px;transition:all 0.3s ease}
         .footer .heart{color:#ff4a4a}
         @media(max-width:767px){.container{padding:15px 12px 30px}
@@ -192,7 +222,11 @@
         .refresh-btn{max-width:100%}
         .header .header-right{gap:8px}
         .header .header-right .theme-toggle{padding:4px 10px;font-size:0.9em}
-        .header .header-right .theme-toggle .label{display:none}}
+        .header .header-right .theme-toggle .label{display:none}
+        .live-banner{padding:6px 12px}
+        .live-banner .live-text{font-size:0.75em}
+        .live-banner .live-label{font-size:0.6em}
+        .live-banner .live-count{font-size:0.6em}}
         @media(max-width:480px){.header .logo{font-size:1.3em}
         .header .subtitle{font-size:0.6em}
         .article-card .card-image{height:140px}
@@ -204,6 +238,15 @@
     </style>
 </head>
 <body>
+<!-- ===== LIVE BANNER ===== -->
+<div class="live-banner" id="liveBanner">
+    <span class="live-dot"></span>
+    <span class="live-label">🔴 LIVE</span>
+    <span class="live-text" id="liveText">Latest news updates</span>
+    <span class="live-count" id="liveCount">0 new</span>
+    <button class="live-close" onclick="closeLiveBanner()">✕</button>
+</div>
+
 <!-- TOP BAR -->
 <div class="top-bar">
     <div class="inner">
@@ -220,6 +263,9 @@
         </div>
         <div class="header-right">
             <div class="stats"><span id="articleCount">0</span> articles</div>
+            <div class="live-indicator" id="liveIndicator">
+                <span class="dot"></span> Live
+            </div>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
                 <span class="icon">🌙</span>
                 <span class="label">Dark</span>
@@ -234,6 +280,10 @@
         <div class="trending-header">
             <span class="icon">🔥</span>
             <h3>Trending <span>Topics</span></h3>
+            <div class="live-indicator-header">
+                <span class="dot" id="updateDot"></span>
+                <span id="updateStatus">Auto-refresh</span>
+            </div>
         </div>
         <div class="trending-topics" id="trendingTopics">
             <div class="trending-empty">Loading trending topics...</div>
@@ -269,7 +319,100 @@
     <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
     <div class="footer"><span class="heart">❤</span> NewsPro • All sources credited</div>
 </div>
-<script>    // ===== RELATED ARTICLES =====
+<script>    // ===== LIVE UPDATES =====
+    let updateInterval = null;
+    let updateCount = 0;
+    let previousArticles = [];
+    let isLiveEnabled = true;
+
+    function startLiveUpdates() {
+        if (updateInterval) clearInterval(updateInterval);
+        updateInterval = setInterval(() => {
+            if (isLiveEnabled) {
+                checkForUpdates();
+            }
+        }, 30000);
+        console.log('🔴 Live updates started');
+    }
+
+    function stopLiveUpdates() {
+        if (updateInterval) {
+            clearInterval(updateInterval);
+            updateInterval = null;
+            console.log('🔴 Live updates stopped');
+        }
+    }
+
+    async function checkForUpdates() {
+        try {
+            const response = await fetch('/api/news');
+            const data = await response.json();
+            const newArticles = data.articles || [];
+            
+            if (previousArticles.length > 0 && newArticles.length > previousArticles.length) {
+                const newCount = newArticles.length - previousArticles.length;
+                showLiveBanner(newArticles, newCount);
+                
+                // Update the dot animation
+                const dot = document.getElementById('updateDot');
+                const status = document.getElementById('updateStatus');
+                dot.classList.add('updating');
+                status.textContent = '🔴 New updates!';
+                setTimeout(() => {
+                    dot.classList.remove('updating');
+                    status.textContent = 'Auto-refresh';
+                }, 3000);
+            }
+            
+            previousArticles = newArticles;
+            updateCount++;
+        } catch (err) {
+            console.log('Live update check failed:', err);
+        }
+    }
+
+    function showLiveBanner(articles, count) {
+        const banner = document.getElementById('liveBanner');
+        const text = document.getElementById('liveText');
+        const countEl = document.getElementById('liveCount');
+        
+        if (articles.length > 0) {
+            const latest = articles[0];
+            text.innerHTML = `${latest.title} <a href="${latest.link}" target="_blank">Read more →</a>`;
+            countEl.textContent = `${count} new`;
+            banner.classList.add('show');
+            
+            // Also show live indicator in header
+            document.getElementById('liveIndicator').classList.add('active');
+            
+            // Auto-hide after 10 seconds if user doesn't close
+            setTimeout(() => {
+                if (banner.classList.contains('show')) {
+                    // Only hide if not manually closed
+                }
+            }, 10000);
+        }
+    }
+
+    function closeLiveBanner() {
+        document.getElementById('liveBanner').classList.remove('show');
+        document.getElementById('liveIndicator').classList.remove('active');
+    }
+
+    // Toggle live updates (user can enable/disable)
+    function toggleLiveUpdates() {
+        isLiveEnabled = !isLiveEnabled;
+        const status = document.getElementById('updateStatus');
+        if (isLiveEnabled) {
+            status.textContent = 'Auto-refresh';
+            startLiveUpdates();
+        } else {
+            status.textContent = '⏸️ Paused';
+            stopLiveUpdates();
+        }
+    }
+
+    // ===== RELATED ARTICLES =====
     let relatedArticles = [];
 
     function findRelatedArticles(article, allArticles, limit = 4) {
@@ -321,14 +464,9 @@
         }
         const related = findRelatedArticles(article, allArticles);
         renderRelatedArticles(related);
-        // Store for reference
         relatedArticles = related;
     }
 
-    // ===== MODIFY RENDER NEWS TO ADD CLICK =====
-    // Add this inside renderNews function for each article
-    // We'll add onclick to the article card
-    
     // ===== TRENDING TOPICS =====
     let trendingTopics = [];
     let selectedTrending = null;
@@ -455,7 +593,7 @@
         });
     }
 
-        // ===== SEARCH =====
+    // ===== SEARCH =====
     let searchQuery = '';
     let allArticlesCache = [];
     let currentView = 'all';
@@ -585,6 +723,8 @@
             const data = await response.json();
             allArticles = data.articles || [];
             allArticlesCache = allArticles;
+            previousArticles = allArticles; // Store for live updates
+            
             document.getElementById('articleCount').textContent = data.total || 0;
             document.getElementById('searchResultCount').textContent = data.total || 0;
             
@@ -598,8 +738,10 @@
             renderCurrentView();
             updateSavedUI();
             
-            // Clear related articles
             document.getElementById('relatedList').innerHTML = '<div class="related-empty">Click any article to see related news</div>';
+            
+            // Start live updates after loading
+            startLiveUpdates();
         } catch (err) {
             grid.innerHTML = `
                 <div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;">
@@ -694,7 +836,6 @@
                 highlightedTitle = (article.title || '').replace(regex, '<mark style="background:#ff4a4a;color:#fff;padding:0 4px;border-radius:3px;">$1</mark>');
             }
 
-            // Add onclick to the article card for related articles
             const articleJson = JSON.stringify(article).replace(/"/g, '&quot;');
 
             html += `
