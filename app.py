@@ -30,6 +30,13 @@ def clean_html(text):
     """Remove HTML tags from text"""
     return re.sub(r'<[^>]+>', '', text)
 
+def calculate_read_time(text):
+    """Calculate reading time in minutes"""
+    # Average reading speed: 200 words per minute
+    words = len(text.split())
+    minutes = max(1, round(words / 200))
+    return minutes
+
 def fetch_article_image(article_url):
     """Visit the article page and extract the main image URL"""
     if not article_url:
@@ -43,7 +50,6 @@ def fetch_article_image(article_url):
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             
-            # Method 1: Check for og:image meta tag (most reliable)
             og_image = soup.find('meta', property='og:image')
             if og_image and og_image.get('content'):
                 img_url = og_image['content']
@@ -51,7 +57,6 @@ def fetch_article_image(article_url):
                     img_url = requests.compat.urljoin(article_url, img_url)
                 return img_url
             
-            # Method 2: Check for Twitter card image
             twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
             if twitter_image and twitter_image.get('content'):
                 img_url = twitter_image['content']
@@ -59,7 +64,6 @@ def fetch_article_image(article_url):
                     img_url = requests.compat.urljoin(article_url, img_url)
                 return img_url
             
-            # Method 3: Find the first large image in the article body
             main_content = soup.find('article') or soup.find('main') or soup.find('div', class_='content') or soup.find('body')
             if main_content:
                 img = main_content.find('img')
@@ -69,7 +73,6 @@ def fetch_article_image(article_url):
                         img_src = requests.compat.urljoin(article_url, img_src)
                     return img_src
             
-            # Method 4: Look for any large image on the page
             all_images = soup.find_all('img')
             for img in all_images:
                 if img.get('src'):
@@ -78,7 +81,6 @@ def fetch_article_image(article_url):
                         continue
                     if not src.startswith('http'):
                         src = requests.compat.urljoin(article_url, src)
-                    # Return the first non-logo image
                     return src
                     
     except Exception as e:
@@ -90,7 +92,6 @@ def extract_image_from_entry(entry, category='General', title=''):
     """Extract image from RSS entry or fetch from article page"""
     image = None
     
-    # First try to get image from RSS feed (most efficient)
     if 'media_thumbnail' in entry and entry.media_thumbnail:
         image = entry.media_thumbnail[0]['url']
     
@@ -118,12 +119,10 @@ def extract_image_from_entry(entry, category='General', title=''):
                 image = img_match.group(1)
                 break
     
-    # If no image in RSS, visit the article page to get one
     if not image and entry.get('link'):
         article_url = entry.get('link')
         image = fetch_article_image(article_url)
     
-    # If still no image, use a category-specific placeholder
     if not image:
         category_placeholders = {
             'World': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=World+News',
@@ -194,16 +193,18 @@ def get_articles():
             feed = feedparser.parse(source['url'])
             
             for entry in feed.entries[:5]:
-                # Clean up the summary
                 summary = clean_html(entry.get('summary', ''))
                 summary = summary[:250] + '...' if len(summary) > 250 else summary
                 
                 title = entry.get('title', 'No title')
                 
-                # Get image - now with real article fetching
+                # Get image
                 image = extract_image_from_entry(entry, source['category'], title)
                 
-                # Get published date
+                # ===== CALCULATE READ TIME =====
+                full_text = title + ' ' + summary
+                read_time = calculate_read_time(full_text)
+                
                 published = entry.get('published', '')
                 if not published and 'published_parsed' in entry:
                     if entry.published_parsed:
@@ -217,12 +218,12 @@ def get_articles():
                     'category': source['category'],
                     'published': published,
                     'image': image,
-                    'rewritten': False
+                    'rewritten': False,
+                    'read_time': read_time  # ← NEW: Read time in minutes
                 })
         except Exception as e:
             print(f"Error fetching {source['name']}: {e}")
     
-    # Sort by date (newest first)
     all_articles.sort(key=lambda x: x['published'], reverse=True)
     return all_articles
 
@@ -235,7 +236,6 @@ def index():
 def api_news():
     articles = get_articles()
     
-    # Rewrite the first 5 articles
     for i, article in enumerate(articles[:5]):
         if article.get('summary') and len(article['summary']) > 30:
             rewritten = rewrite_article(article['title'], article['summary'])
