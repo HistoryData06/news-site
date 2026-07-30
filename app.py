@@ -1,14 +1,14 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import requests
-import feedparser
 import re
 from datetime import datetime
+import random
 import os
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
-CORS(app, origins=["https://news-site-klur.onrender.com", "http://localhost:5000", "*"])
+CORS(app)
 
 # ===== NEWS SOURCES =====
 NEWS_SOURCES = [
@@ -27,9 +27,11 @@ NEWS_SOURCES = [
 ]
 
 def clean_html(text):
+    """Remove HTML tags from text"""
     return re.sub(r'<[^>]+>', '', text)
 
 def fetch_article_image(article_url):
+    """Visit the article page and extract the main image URL"""
     if not article_url:
         return None
     try:
@@ -49,6 +51,7 @@ def fetch_article_image(article_url):
     return None
 
 def extract_image_from_entry(entry, category='General'):
+    """Extract image from RSS entry or fetch from article page"""
     image = None
     if 'media_thumbnail' in entry and entry.media_thumbnail:
         image = entry.media_thumbnail[0]['url']
@@ -73,10 +76,12 @@ def extract_image_from_entry(entry, category='General'):
     return image
 
 def calculate_read_time(text):
+    """Calculate reading time in minutes"""
     words = len(text.split())
     return max(1, round(words / 200))
 
 def get_articles():
+    """Fetch articles from all news sources"""
     all_articles = []
     for source in NEWS_SOURCES:
         try:
@@ -106,6 +111,29 @@ def get_articles():
     all_articles.sort(key=lambda x: x['published'], reverse=True)
     return all_articles
 
+def generate_fallback_article(title, year):
+    """Generate a fallback article if AI fails"""
+    year_text = f" in {year}" if year else ""
+    
+    article = f"**{title}**\n\n"
+    article += f"This significant historical event{year_text} represents an important moment in history. "
+    
+    if year:
+        article += f"The year {year} was a period of great change and development, and this event played a crucial role in shaping the world we live in today. "
+    
+    article += "Historians continue to study this event to understand its causes, consequences, and lasting impact on society. "
+    
+    article += "\n\n**Historical Context**\n\n"
+    article += "Understanding this event requires looking at the broader historical context. The political, social, and economic conditions of the time created the environment in which this event could occur. "
+    
+    article += "\n\n**Significance**\n\n"
+    article += "This event is significant because it influenced subsequent historical developments and shaped the course of history. Its legacy can still be seen in modern institutions, cultural practices, and international relations. "
+    
+    article += "\n\n**Legacy**\n\n"
+    article += "The lasting impact of this event serves as a reminder of how historical moments continue to influence our present and future. By studying such events, we gain valuable insights into human nature, society, and the forces that shape our world."
+    
+    return article
+
 # ===== ROUTES =====
 @app.route('/')
 def index():
@@ -124,6 +152,75 @@ def api_news():
 def api_categories():
     categories = list(set(s['category'] for s in NEWS_SOURCES))
     return jsonify({'categories': sorted(categories)})
+
+@app.route('/api/article')
+def get_article():
+    """Generate a complete 200-300 word article using AI"""
+    title = request.args.get('title', '')
+    if not title:
+        return jsonify({'error': 'No title provided'}), 400
+    
+    # Extract year if present
+    year_match = re.search(r'\b(\d{4})\b', title)
+    year = year_match.group(1) if year_match else None
+    
+    deepseek_key = os.environ.get('DEEPSEEK_API_KEY')
+    
+    # Try AI first
+    if deepseek_key:
+        try:
+            url = "https://api.deepseek.com/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {deepseek_key}",
+                "Content-Type": "application/json"
+            }
+            
+            year_text = f" in the year {year}" if year else ""
+            
+            prompt = f"""Write a complete, self-contained historical article about: {title}{year_text}.
+
+The article should:
+- Be 200-300 words long
+- Include key historical facts, context, and significance
+- Be written in a clear, engaging, and professional style
+- Stand alone as a complete article (no external links needed)
+- End with a meaningful conclusion about its historical importance
+
+Write the article in English:"""
+            
+            data = {
+                "model": "deepseek-chat",
+                "messages": [
+                    {"role": "system", "content": "You are a professional historian writing engaging, self-contained articles for a history app. Write in a clear, informative style."},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 500
+            }
+            
+            response = requests.post(url, headers=headers, json=data, timeout=15)
+            
+            if response.status_code == 200:
+                result = response.json()
+                article = result.get('choices', [{}])[0].get('message', {}).get('content', '')
+                if article and len(article) > 50:
+                    return jsonify({
+                        'title': title,
+                        'content': article,
+                        'source': 'ai_generated',
+                        'word_count': len(article.split())
+                    })
+        except Exception as e:
+            print(f"DeepSeek error: {e}")
+    
+    # Fallback: Generate a rich article from the title
+    fallback = generate_fallback_article(title, year)
+    return jsonify({
+        'title': title,
+        'content': fallback,
+        'source': 'fallback',
+        'word_count': len(fallback.split())
+    })
 
 @app.route('/health')
 def health():
