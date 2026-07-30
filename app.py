@@ -5,7 +5,7 @@ import feedparser
 import re
 from datetime import datetime
 import os
-import hashlib
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 CORS(app, origins=["https://news-site-klur.onrender.com", "http://localhost:5000", "*"])
@@ -30,26 +30,67 @@ def clean_html(text):
     """Remove HTML tags from text"""
     return re.sub(r'<[^>]+>', '', text)
 
-def get_unique_image(title, category):
-    """Generate a unique image URL for each article"""
-    # Create a unique seed from the title
-    title_hash = hashlib.md5(title.encode()).hexdigest()
+def fetch_article_image(article_url):
+    """Visit the article page and extract the main image URL"""
+    if not article_url:
+        return None
     
-    # Use the hash as a seed for Picsum (generates consistent random images)
-    # Picsum uses the seed parameter to generate the same image for the same seed
-    # This gives us UNIQUE images for each article
-    seed = int(title_hash[:8], 16)  # Convert first 8 chars to int
+    try:
+        response = requests.get(article_url, timeout=10, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        })
+        
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Method 1: Check for og:image meta tag (most reliable)
+            og_image = soup.find('meta', property='og:image')
+            if og_image and og_image.get('content'):
+                img_url = og_image['content']
+                if not img_url.startswith('http'):
+                    img_url = requests.compat.urljoin(article_url, img_url)
+                return img_url
+            
+            # Method 2: Check for Twitter card image
+            twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
+            if twitter_image and twitter_image.get('content'):
+                img_url = twitter_image['content']
+                if not img_url.startswith('http'):
+                    img_url = requests.compat.urljoin(article_url, img_url)
+                return img_url
+            
+            # Method 3: Find the first large image in the article body
+            main_content = soup.find('article') or soup.find('main') or soup.find('div', class_='content') or soup.find('body')
+            if main_content:
+                img = main_content.find('img')
+                if img and img.get('src'):
+                    img_src = img['src']
+                    if not img_src.startswith('http'):
+                        img_src = requests.compat.urljoin(article_url, img_src)
+                    return img_src
+            
+            # Method 4: Look for any large image on the page
+            all_images = soup.find_all('img')
+            for img in all_images:
+                if img.get('src'):
+                    src = img['src']
+                    if 'logo' in src.lower() or 'icon' in src.lower() or 'avatar' in src.lower():
+                        continue
+                    if not src.startswith('http'):
+                        src = requests.compat.urljoin(article_url, src)
+                    # Return the first non-logo image
+                    return src
+                    
+    except Exception as e:
+        print(f"Error fetching image from {article_url}: {e}")
     
-    # Picsum URL with seed - each article gets its own unique image
-    image_url = f"https://picsum.photos/seed/{seed}/400/200"
-    
-    return image_url
+    return None
 
 def extract_image_from_entry(entry, category='General', title=''):
-    """Extract image from RSS entry with unique fallback"""
+    """Extract image from RSS entry or fetch from article page"""
     image = None
     
-    # Try to get real image from RSS
+    # First try to get image from RSS feed (most efficient)
     if 'media_thumbnail' in entry and entry.media_thumbnail:
         image = entry.media_thumbnail[0]['url']
     
@@ -77,9 +118,23 @@ def extract_image_from_entry(entry, category='General', title=''):
                 image = img_match.group(1)
                 break
     
-    # If no image found, generate a unique one
+    # If no image in RSS, visit the article page to get one
+    if not image and entry.get('link'):
+        article_url = entry.get('link')
+        image = fetch_article_image(article_url)
+    
+    # If still no image, use a category-specific placeholder
     if not image:
-        image = get_unique_image(title or entry.get('title', ''), category)
+        category_placeholders = {
+            'World': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=World+News',
+            'Tech': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=Tech+News',
+            'Business': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=Business',
+            'Science': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=Science',
+            'Sports': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=Sports',
+            'Health': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=Health',
+            'Entertainment': 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=Entertainment',
+        }
+        image = category_placeholders.get(category, 'https://placehold.co/600x400/1a1a1a/ff4a4a?text=News')
     
     return image
 
@@ -131,7 +186,7 @@ Rewritten version:"""
         return summary
 
 def get_articles():
-    """Fetch articles from all news sources with unique images"""
+    """Fetch articles from all news sources"""
     all_articles = []
     
     for source in NEWS_SOURCES:
@@ -145,7 +200,7 @@ def get_articles():
                 
                 title = entry.get('title', 'No title')
                 
-                # Get image with unique fallback
+                # Get image - now with real article fetching
                 image = extract_image_from_entry(entry, source['category'], title)
                 
                 # Get published date
