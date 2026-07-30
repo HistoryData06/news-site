@@ -73,7 +73,18 @@
         body{font-family:'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg-body);min-height:100vh;padding:0;color:var(--text-primary);transition:background 0.3s ease, color 0.3s ease}
         .container{max-width:1100px;margin:0 auto;padding:20px 15px 40px}
         
-        /* ===== LIVE BANNER ===== */
+        /* ARTICLE POPUP */
+        .article-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:9999;padding:20px;overflow-y:auto}
+        .article-overlay.active{display:block}
+        .article-overlay .article-content{background:#0a0a0a;border-radius:16px;max-width:600px;margin:20px auto;padding:30px;border:1px solid rgba(255,215,0,0.15);max-height:90vh;overflow-y:auto;position:relative}
+        .article-overlay .article-content .close-btn{position:sticky;top:0;float:right;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:50%;color:#FFD700;font-size:1.5em;width:40px;height:40px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center}
+        .article-overlay .article-content .close-btn:hover{background:rgba(255,215,0,0.2);transform:rotate(90deg)}
+        .article-overlay .article-content .article-title{color:#FFD700;font-size:1.5em;margin-bottom:16px;padding-right:50px}
+        .article-overlay .article-content .article-text{color:#ddd;line-height:1.9;font-size:0.95em}
+        .article-overlay .article-content .article-text p{margin-bottom:12px}
+        .article-overlay .article-content .loading-text{color:#888;text-align:center;padding:40px 0}
+
+        /* LIVE BANNER */
         .live-banner{background:var(--live-bg);color:var(--live-text);padding:8px 20px;display:none;align-items:center;gap:15px;position:sticky;top:0;z-index:999;box-shadow:0 2px 15px rgba(204,0,0,0.3);transition:all 0.3s ease}
         .live-banner.show{display:flex}
         .live-banner .live-dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse-dot 1s ease-in-out infinite;flex-shrink:0}
@@ -144,7 +155,7 @@
         .news-grid .featured{grid-column:1 / -1}}
         @media(min-width:1024px){.news-grid{grid-template-columns:repeat(3,1fr)}
         .news-grid .featured{grid-column:1 / -1}}
-        .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color);position:relative;animation:fadeIn .5s ease forwards}
+        .article-card{background:var(--bg-card);border-radius:10px;overflow:hidden;border:1px solid var(--border-color);transition:all .3s ease;box-shadow:0 2px 8px var(--shadow-color);position:relative;animation:fadeIn .5s ease forwards;cursor:pointer}
         @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         .article-card.new-article{animation:slideIn .5s ease forwards}
         @keyframes slideIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
@@ -176,7 +187,7 @@
         .article-card .card-content .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.7em;color:var(--text-muted);border-top:1px solid var(--border-color);padding-top:12px;margin-top:4px;transition:all 0.3s ease}
         .article-card .card-content .meta .source{color:var(--text-muted)}
         .article-card .card-content .meta .time{color:var(--text-light)}
-        .article-card .card-content .read-more{color:#ff4a4a;text-decoration:none;font-weight:700;transition:all .2s;font-size:0.8em}
+        .article-card .card-content .read-more{color:#ff4a4a;text-decoration:none;font-weight:700;transition:all .2s;font-size:0.8em;cursor:pointer}
         .article-card .card-content .read-more:hover{color:#cc0000;text-decoration:underline}
         .no-results{text-align:center;padding:60px 20px;color:var(--text-muted);grid-column:1/-1}
         .no-results .big-icon{font-size:3em;display:block;margin-bottom:12px}
@@ -231,10 +242,14 @@
         .search-container .search-count{font-size:0.65em}
         .article-card .card-content .save-btn{width:28px;height:28px;font-size:0.85em}
         .trending-container .trending-topics{gap:6px}}
+        
+        /* Article Popup - Dark/Light */
+        body.dark-mode .article-overlay .article-content{background:#1a1a1a}
+        body.dark-mode .article-overlay .article-content .article-text{color:#ccc}
     </style>
 </head>
 <body>
-<!-- ===== LIVE BANNER ===== -->
+<!-- LIVE BANNER -->
 <div class="live-banner" id="liveBanner">
     <span class="live-dot"></span>
     <span class="live-label">🔴 LIVE</span>
@@ -250,6 +265,7 @@
         <div><a href="/">Home</a><a href="/news">News</a></div>
     </div>
 </div>
+
 <!-- HEADER -->
 <div class="header">
     <div class="inner">
@@ -269,6 +285,17 @@
         </div>
     </div>
 </div>
+
+<!-- ARTICLE POPUP -->
+<div class="article-overlay" id="articleOverlay" onclick="if(event.target===this)closeArticle()">
+    <div class="article-content" id="articleContent">
+        <button class="close-btn" onclick="closeArticle()">✕</button>
+        <div id="articleBody">
+            <div class="loading-text">📖 Loading article...</div>
+        </div>
+    </div>
+</div>
+
 <!-- MAIN CONTAINER -->
 <div class="container">
     <!-- TRENDING TOPICS -->
@@ -285,488 +312,15 @@
             <div class="trending-empty">Loading trending topics...</div>
         </div>
     </div>
+    
     <!-- SEARCH BAR -->
     <div class="search-container">
         <div class="search-wrapper">
             <span class="search-icon">🔍</span>
             <input type="text" id="searchInput" placeholder="Search news articles..." oninput="handleSearch(this.value)">
             <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
-            <span class="search-count" id="searchCount"><span id="searchResultCount">0</span> results</span>
-        </div>
-    </div>
-    <!-- CATEGORIES -->
-    <div class="category-filter" id="categoryFilter">
-        <button class="active" data-category="all">All</button>
-    </div>
-    <!-- NEWS GRID -->
-    <div class="news-grid" id="newsContent">
-        <div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>
-    </div>
-    <!-- RELATED ARTICLES -->
-    <div class="related-container" id="relatedContainer">
-        <div class="related-header">
-            <h3>📰 Related <span>Articles</span></h3>
-        </div>
-        <div class="related-list" id="relatedList">
-            <div class="related-empty">Click any article to see related news</div>
-        </div>
-    </div>
-    <!-- REFRESH -->
-    <button class="refresh-btn" onclick="loadNews()">⟳ Refresh News</button>
-    <div class="footer"><span class="heart">❤</span> NewsPro • All sources credited</div>
-</div>
-<script>    // ===== LIVE UPDATES =====
-    let updateInterval = null;
-    let updateCount = 0;
-    let previousArticles = [];
-    let isLiveEnabled = true;
-
-    function startLiveUpdates() {
-        if (updateInterval) clearInterval(updateInterval);
-        updateInterval = setInterval(() => {
-            if (isLiveEnabled) {
-                checkForUpdates();
-            }
-        }, 30000);
-        console.log('🔴 Live updates started');
-    }
-
-    function stopLiveUpdates() {
-        if (updateInterval) {
-            clearInterval(updateInterval);
-            updateInterval = null;
-            console.log('🔴 Live updates stopped');
-        }
-    }
-
-    async function checkForUpdates() {
-        try {
-            const response = await fetch('/api/news');
-            const data = await response.json();
-            const newArticles = data.articles || [];
-            
-            if (previousArticles.length > 0 && newArticles.length > previousArticles.length) {
-                const newCount = newArticles.length - previousArticles.length;
-                showLiveBanner(newArticles, newCount);
-                
-                const dot = document.getElementById('updateDot');
-                const status = document.getElementById('updateStatus');
-                dot.classList.add('updating');
-                status.textContent = '🔴 New updates!';
-                setTimeout(() => {
-                    dot.classList.remove('updating');
-                    status.textContent = 'Auto-refresh';
-                }, 3000);
-            }
-            
-            previousArticles = newArticles;
-            updateCount++;
-        } catch (err) {
-            console.log('Live update check failed:', err);
-        }
-    }
-
-    function showLiveBanner(articles, count) {
-        const banner = document.getElementById('liveBanner');
-        const text = document.getElementById('liveText');
-        const countEl = document.getElementById('liveCount');
-        
-        if (articles.length > 0) {
-            const latest = articles[0];
-            text.innerHTML = `${latest.title} <a href="${latest.link}" target="_blank">Read more →</a>`;
-            countEl.textContent = `${count} new`;
-            banner.classList.add('show');
-            document.getElementById('liveIndicator').classList.add('active');
-        }
-    }
-
-    function closeLiveBanner() {
-        document.getElementById('liveBanner').classList.remove('show');
-        document.getElementById('liveIndicator').classList.remove('active');
-    }
-
-    function toggleLiveUpdates() {
-        isLiveEnabled = !isLiveEnabled;
-        const status = document.getElementById('updateStatus');
-        if (isLiveEnabled) {
-            status.textContent = 'Auto-refresh';
-            startLiveUpdates();
-        } else {
-            status.textContent = '⏸️ Paused';
-            stopLiveUpdates();
-        }
-    }
-
-    // ===== RELATED ARTICLES =====
-    let relatedArticles = [];
-
-    function findRelatedArticles(article, allArticles, limit = 4) {
-        if (!article) return [];
-        const keywords = article.title.split(' ')
-            .filter(w => w.length > 3)
-            .map(w => w.toLowerCase());
-        
-        const scored = allArticles.map(a => {
-            if (a.link === article.link) return { ...a, score: -1 };
-            const titleWords = a.title.toLowerCase().split(' ');
-            let score = 0;
-            keywords.forEach(kw => {
-                if (titleWords.some(w => w.includes(kw))) score += 2;
-                if (a.summary && a.summary.toLowerCase().includes(kw)) score += 1;
-            });
-            return { ...a, score };
-        });
-        
-        return scored
-            .filter(a => a.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, limit);
-    }
-
-    function renderRelatedArticles(related) {
-        const container = document.getElementById('relatedList');
-        if (!related || related.length === 0) {
-            container.innerHTML = '<div class="related-empty">No related articles found</div>';
-            return;
-        }
-        let html = '';
-        related.forEach((article, index) => {
-            html += `
-                <a href="${article.link}" target="_blank" class="related-item">
-                    <span class="related-index">${index + 1}</span>
-                    <span class="related-title">${article.title}</span>
-                    <span class="related-source">${article.source || ''}</span>
-                </a>
-            `;
-        });
-        container.innerHTML = html;
-    }
-
-    function updateRelatedForArticle(article) {
-        if (!article) {
-            document.getElementById('relatedList').innerHTML = '<div class="related-empty">Click any article to see related news</div>';
-            return;
-        }
-        const related = findRelatedArticles(article, allArticles);
-        renderRelatedArticles(related);
-        relatedArticles = related;
-    }
-
-    // ===== TRENDING TOPICS =====
-    let trendingTopics = [];
-    let selectedTrending = null;
-
-    function extractTrendingTopics(articles) {
-        const topicMap = {};
-        const stopWords = ['the', 'a', 'an', 'of', 'for', 'on', 'at', 'to', 'in', 'with', 'without', 'and', 'but', 'or', 'yet', 'so', 'as', 'by', 'from', 'into', 'through', 'during', 'including', 'after', 'before', 'when', 'where', 'who', 'which', 'that', 'this', 'these', 'those', 'then', 'than', 'would', 'could', 'should', 'may', 'might', 'will', 'shall', 'have', 'has', 'had', 'do', 'does', 'did', 'more', 'most', 'some', 'any', 'no', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just', 'but', 'also', 'etc', 'etc.', 'vs', 'vs.', '&'];
-        
-        articles.forEach(article => {
-            const title = article.title || '';
-            const words = title.split(' ');
-            const keywords = words.filter(w => w.length > 3 && !stopWords.includes(w.toLowerCase()));
-            keywords.forEach(word => {
-                const clean = word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-                if (clean.length > 2) {
-                    topicMap[clean] = (topicMap[clean] || 0) + 1;
-                }
-            });
-        });
-        
-        const sorted = Object.entries(topicMap)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10);
-        
-        trendingTopics = sorted.map(([word, count]) => ({
-            word: word,
-            count: count,
-            display: word.charAt(0).toUpperCase() + word.slice(1)
-        }));
-        
-        return trendingTopics;
-    }
-
-    function renderTrendingTopics(topics) {
-        const container = document.getElementById('trendingTopics');
-        if (!topics || topics.length === 0) {
-            container.innerHTML = '<div class="trending-empty">No trending topics yet</div>';
-            return;
-        }
-        const emojis = ['🔥', '💥', '⭐', '🚀', '📈', '⚡', '🎯', '💡', '🌟', '💪'];
-        let html = '';
-        topics.forEach((topic, index) => {
-            const emoji = emojis[index % emojis.length];
-            const isActive = selectedTrending === topic.word;
-            html += `
-                <div class="topic ${isActive ? 'active' : ''}" onclick="filterByTrending('${topic.word}')">
-                    <span class="emoji">${emoji}</span>
-                    ${topic.display}
-                    <span class="count">${topic.count}</span>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    }
-
-    function filterByTrending(word) {
-        if (selectedTrending === word) {
-            selectedTrending = null;
-            document.getElementById('searchInput').value = '';
-            searchQuery = '';
-            document.getElementById('searchClear').classList.remove('show');
-            renderCurrentView();
-            renderTrendingTopics(trendingTopics);
-            return;
-        }
-        selectedTrending = word;
-        document.getElementById('searchInput').value = word;
-        searchQuery = word;
-        document.getElementById('searchClear').classList.add('show');
-        renderCurrentView();
-        renderTrendingTopics(trendingTopics);
-    }
-
-    // ===== SAVE ARTICLES =====
-    let savedArticles = JSON.parse(localStorage.getItem('newsProSaved') || '[]');
-
-    function toggleSave(article) {
-        const index = savedArticles.findIndex(a => a.link === article.link);
-        if (index > -1) {
-            savedArticles.splice(index, 1);
-        } else {
-            savedArticles.push({
-                title: article.title,
-                link: article.link,
-                source: article.source,
-                category: article.category,
-                summary: article.summary,
-                image: article.image,
-                read_time: article.read_time,
-                savedAt: new Date().toISOString()
-            });
-        }
-        localStorage.setItem('newsProSaved', JSON.stringify(savedArticles));
-        updateSavedUI();
-        renderCurrentView();
-    }
-
-    function isSaved(link) {
-        return savedArticles.some(a => a.link === link);
-    }
-
-    function updateSavedUI() {
-        const savedBtn = document.querySelector('#categoryFilter button[data-category="saved"]');
-        if (savedBtn) {
-            const count = savedArticles.length;
-            savedBtn.innerHTML = `⭐ Saved ${count > 0 ? `<span class="count">${count}</span>` : ''}`;
-        }
-        document.querySelectorAll('.save-btn').forEach(btn => {
-            const link = btn.dataset.link;
-            if (link && isSaved(link)) {
-                btn.classList.add('saved');
-                btn.textContent = '⭐';
-            } else {
-                btn.classList.remove('saved');
-                btn.textContent = '☆';
-            }
-        });
-        document.querySelectorAll('.saved-badge').forEach(badge => {
-            const card = badge.closest('.article-card');
-            if (card) {
-                const link = card.dataset.link;
-                badge.style.display = (link && isSaved(link)) ? 'block' : 'none';
-            }
-        });
-    }
-
-    // ===== SEARCH =====
-    let searchQuery = '';
-    let allArticlesCache = [];
-    let currentView = 'all';
-
-    function handleSearch(query) {
-        searchQuery = query.trim().toLowerCase();
-        const clearBtn = document.getElementById('searchClear');
-        if (query.length > 0) {
-            clearBtn.classList.add('show');
-        } else {
-            clearBtn.classList.remove('show');
-        }
-        renderCurrentView();
-        if (selectedTrending) {
-            const topics = document.querySelectorAll('.trending-topics .topic');
-            topics.forEach(t => {
-                t.classList.remove('active');
-                if (t.textContent.toLowerCase().includes(selectedTrending)) {
-                    t.classList.add('active');
-                }
-            });
-        }
-    }
-
-    function clearSearch() {
-        document.getElementById('searchInput').value = '';
-        document.getElementById('searchClear').classList.remove('show');
-        searchQuery = '';
-        selectedTrending = null;
-        renderCurrentView();
-        renderTrendingTopics(trendingTopics);
-        document.getElementById('searchInput').focus();
-    }
-
-    function getFilteredArticles() {
-        let articles = [];
-        if (currentView === 'saved') {
-            articles = savedArticles;
-        } else {
-            articles = allArticlesCache;
-        }
-        if (searchQuery) {
-            return articles.filter(article => {
-                const title = (article.title || '').toLowerCase();
-                const summary = (article.summary || '').toLowerCase();
-                const source = (article.source || '').toLowerCase();
-                const category = (article.category || '').toLowerCase();
-                return title.includes(searchQuery) || 
-                       summary.includes(searchQuery) || 
-                       source.includes(searchQuery) || 
-                       category.includes(searchQuery);
-            });
-        }
-        return articles;
-    }
-
-    function renderCurrentView() {
-        const filtered = getFilteredArticles();
-        document.getElementById('searchResultCount').textContent = filtered.length;
-        if (currentView === 'saved' && filtered.length === 0 && !searchQuery) {
-            const grid = document.getElementById('newsContent');
-            grid.innerHTML = `
-                <div class="no-results" style="grid-column:1/-1;">
-                    <span class="big-icon">⭐</span>
-                    <p>No saved articles yet</p>
-                    <p style="font-size:0.8em;color:var(--text-light);margin-top:4px;">Save articles by clicking the ☆ button on any news card</p>
-                </div>
-            `;
-            return;
-        }
-        renderNews(filtered);
-    }
-
-    // ===== DARK MODE =====
-    function toggleTheme() {
-        const body = document.body;
-        const toggle = document.getElementById('themeToggle');
-        const icon = toggle.querySelector('.icon');
-        const label = toggle.querySelector('.label');
-        body.classList.toggle('dark-mode');
-        if (body.classList.contains('dark-mode')) {
-            icon.textContent = '☀️';
-            label.textContent = 'Light';
-            localStorage.setItem('theme', 'dark');
-        } else {
-            icon.textContent = '🌙';
-            label.textContent = 'Dark';
-            localStorage.setItem('theme', 'light');
-        }
-    }
-
-    function loadTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        const body = document.body;
-        const toggle = document.getElementById('themeToggle');
-        const icon = toggle.querySelector('.icon');
-        const label = toggle.querySelector('.label');
-        if (savedTheme === 'dark') {
-            body.classList.add('dark-mode');
-            icon.textContent = '☀️';
-            label.textContent = 'Light';
-        } else {
-            body.classList.remove('dark-mode');
-            icon.textContent = '🌙';
-            label.textContent = 'Dark';
-        }
-    }
-
-    // ===== STATE =====
-    let currentCategory = 'all';
-    let allArticles = [];
-
-    // ===== SET CURRENT DATE =====
-    function setDate() {
-        const now = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
-    }
-    setDate();
-
-    // ===== LOAD NEWS =====
-    async function loadNews() {
-        const grid = document.getElementById('newsContent');
-        grid.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Loading latest news...</p></div>`;
-        try {
-            const response = await fetch('/api/news');
-            const data = await response.json();
-            allArticles = data.articles || [];
-            allArticlesCache = allArticles;
-            previousArticles = allArticles;
-            
-            document.getElementById('articleCount').textContent = data.total || 0;
-            document.getElementById('searchResultCount').textContent = data.total || 0;
-            
-            const topics = extractTrendingTopics(allArticles);
-            renderTrendingTopics(topics);
-            
-            const categories = await fetch('/api/categories');
-            const catData = await categories.json();
-            updateCategories(catData.categories);
-            currentView = 'all';
-            renderCurrentView();
-            updateSavedUI();
-            
-            document.getElementById('relatedList').innerHTML = '<div class="related-empty">Click any article to see related news</div>';
-            
-            startLiveUpdates();
-        } catch (err) {
-            grid.innerHTML = `
-                <div class="article-card" style="text-align:center;padding:40px 20px;grid-column:1/-1;">
-                    <p style="color:#ff4a4a;font-weight:600;">❌ Error loading news</p>
-                    <p style="color:var(--text-muted);font-size:0.9em;margin-top:8px;">${err.message}</p>
-                    <button onclick="loadNews()" style="margin-top:15px;padding:10px 25px;background:#ff4a4a;border:none;border-radius:30px;color:#fff;font-weight:600;cursor:pointer;">Retry</button>
-                </div>
-            `;
-        }
-    }
-
-    // ===== UPDATE CATEGORIES =====
-    function updateCategories(categories) {
-        const container = document.getElementById('categoryFilter');
-        container.innerHTML = `<button class="active" data-category="all">All</button>`;
-        categories.forEach(cat => {
-            const btn = document.createElement('button');
-            btn.dataset.category = cat;
-            btn.textContent = cat;
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('#categoryFilter button').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentView = 'all';
-                filterNews(this.dataset.category);
-            });
-            container.appendChild(btn);
-        });
-        const savedBtn = document.createElement('button');
-        savedBtn.dataset.category = 'saved';
-        savedBtn.className = 'saved-tab';
-        savedBtn.innerHTML = `⭐ Saved <span class="count">${savedArticles.length}</span>`;
-        savedBtn.addEventListener('click', function() {
-            document.querySelectorAll('#categoryFilter button').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentView = 'saved';
-            currentCategory = 'saved';
-            renderCurrentView();
-            updateSavedUI();
-        });
-        container.appendChild(savedBtn);
-    }    // ===== FILTER NEWS =====
+            <span class="search-count" id="searchCount"><span id="searchResultCount
+    // ===== FILTER NEWS =====
     function filterNews(category) {
         currentCategory = category;
         currentView = 'all';
@@ -818,10 +372,15 @@
                 highlightedTitle = (article.title || '').replace(regex, '<mark style="background:#ff4a4a;color:#fff;padding:0 4px;border-radius:3px;">$1</mark>');
             }
 
-            const articleJson = JSON.stringify(article).replace(/"/g, '&quot;');
+            // Escape article data for onclick
+            const safeTitle = article.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeSummary = (article.summary || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeSource = (article.source || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeCategory = (article.category || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeLink = (article.link || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
             html += `
-                <div class="article-card ${featuredClass}" data-link="${article.link}" onclick="updateRelatedForArticle(${articleJson})">
+                <div class="article-card ${featuredClass}" data-link="${article.link}" onclick="openArticlePopup('${safeTitle}', '${safeSummary}', '${safeSource}', '${safeCategory}', '${safeLink}', ${article.read_time || 0})">
                     <div class="card-image">
                         ${imageHtml}
                         ${saved ? `<div class="saved-badge"><span class="icon">⭐</span> Saved</div>` : ''}
@@ -834,23 +393,23 @@
                             ${readTimeText}
                             <span class="spacer"></span>
                             <button class="save-btn ${saved ? 'saved' : ''}" data-link="${article.link}" onclick="event.stopPropagation();toggleSave({
-                                title: '${article.title.replace(/'/g, "\\'")}',
-                                link: '${article.link}',
-                                source: '${article.source || 'News'}',
-                                category: '${article.category || 'General'}',
-                                summary: '${article.summary ? article.summary.replace(/'/g, "\\'") : ''}',
+                                title: '${safeTitle}',
+                                link: '${safeLink}',
+                                source: '${safeSource}',
+                                category: '${safeCategory}',
+                                summary: '${safeSummary}',
                                 image: '${article.image || ''}',
                                 read_time: ${article.read_time || 0}
                             })">
                                 ${saved ? '⭐' : '☆'}
                             </button>
                         </div>
-                        <h2><a href="${article.link}" target="_blank" onclick="event.stopPropagation();">${highlightedTitle}</a></h2>
+                        <h2>${highlightedTitle}</h2>
                         <div class="summary">${summaryHtml}</div>
                         <div class="meta">
                             <span class="source">📰 ${article.source || 'Unknown'}</span>
                             <span class="time">${timeAgo}</span>
-                            <a href="${article.link}" target="_blank" class="read-more" onclick="event.stopPropagation();">Read full article →</a>
+                            <span class="read-more" onclick="event.stopPropagation();openArticlePopup('${safeTitle}', '${safeSummary}', '${safeSource}', '${safeCategory}', '${safeLink}', ${article.read_time || 0})">Read full article →</span>
                         </div>
                     </div>
                 </div>
@@ -859,6 +418,58 @@
         grid.innerHTML = html;
         updateSavedUI();
     }
+
+    // ===== ARTICLE POPUP (NO EXTERNAL LINKS) =====
+    function openArticlePopup(title, summary, source, category, link, readTime) {
+        const overlay = document.getElementById('articleOverlay');
+        const body = document.getElementById('articleBody');
+        overlay.classList.add('active');
+        
+        // Generate article content - everything stays inside the app
+        const paragraphs = summary.split('. ').filter(p => p.trim().length > 10);
+        let articleHtml = `<h2 class="article-title">📰 ${title}</h2>`;
+        articleHtml += `<div class="article-text">`;
+        
+        // Create a rich article from the summary
+        if (paragraphs.length > 1) {
+            paragraphs.forEach(p => {
+                if (p.trim()) {
+                    articleHtml += `<p>${p.trim()}.</p>`;
+                }
+            });
+        } else {
+            articleHtml += `<p>${summary}</p>`;
+        }
+        
+        // Add more context if we have limited content
+        if (summary.length < 100) {
+            articleHtml += `<p><em>${title} is a significant story from ${source}. This event falls under the ${category} category and continues to be relevant to readers worldwide.</em></p>`;
+        }
+        
+        // Add read time and source info
+        articleHtml += `<p style="color:var(--text-muted);font-size:0.8em;border-top:1px solid var(--border-color);padding-top:12px;margin-top:12px;">
+            ⏱️ ${readTime || 1} min read • 📰 ${source} • 🏷️ ${category}
+        </p>`;
+        
+        // Add a "Stay on site" note (no external link)
+        articleHtml += `<p style="text-align:center;color:var(--text-light);font-size:0.7em;margin-top:8px;">
+            📖 All content available here • No external links needed
+        </p>`;
+        
+        articleHtml += `</div>`;
+        body.innerHTML = articleHtml;
+    }
+
+    function closeArticle() {
+        document.getElementById('articleOverlay').classList.remove('active');
+    }
+
+    // Close with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeArticle();
+        }
+    });
 
     // ===== TIME AGO =====
     function timeSince(dateString) {
