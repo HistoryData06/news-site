@@ -23,10 +23,12 @@
         .article-card:hover{border-color:rgba(255,215,0,0.2);transform:translateY(-2px)}
         .article-card .source-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.6em;font-weight:700;color:#FFD700;background:rgba(255,215,0,0.1);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
         .article-card .category-tag{display:inline-block;padding:2px 12px;border-radius:20px;font-size:0.55em;font-weight:700;color:#888;background:rgba(255,255,255,0.05);margin-left:6px;text-transform:uppercase;letter-spacing:1px}
+        .article-card .ai-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.55em;font-weight:700;color:#000;background:#FFD700;margin-left:6px;text-transform:uppercase;letter-spacing:1px}
         .article-card h2{color:#fff;font-size:1.1em;margin-bottom:8px;line-height:1.4}
         .article-card h2 a{color:#fff;text-decoration:none;transition:color .3s ease}
         .article-card h2 a:hover{color:#FFD700}
         .article-card .summary{color:#aaa;font-size:0.9em;line-height:1.6;margin-bottom:10px}
+        .article-card .summary .ai-label{color:#FFD700;font-size:0.7em}
         .article-card .meta{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:0.75em;color:#666}
         .article-card .meta .source{color:#888}
         .article-card .meta .time{color:#555}
@@ -84,10 +86,8 @@
             const data = await response.json();
             allArticles = data.articles || [];
             
-            // Update stats
-            document.getElementById('stats').textContent = `📊 ${data.total} articles from ${data.sources} sources`;
+            document.getElementById('stats').textContent = `📊 ${data.total} articles from ${data.sources} sources ${data.ai_rewrite_enabled ? '✨ AI Rewritten' : ''}`;
             
-            // Update categories
             const categories = await fetch('/api/categories');
             const catData = await categories.json();
             updateCategories(catData.categories);
@@ -106,7 +106,6 @@
 
     function updateCategories(categories) {
         const container = document.getElementById('categoryFilter');
-        // Keep the "All" button
         container.innerHTML = `<button class="active" data-category="all">All</button>`;
         
         categories.forEach(cat => {
@@ -148,15 +147,20 @@
             const imageHtml = article.image ? 
                 `<div class="article-image"><img src="${article.image}" alt="${article.title}" loading="lazy" onerror="this.style.display='none'"></div>` : '';
 
+            const summaryHtml = article.rewritten ? 
+                `<span class="ai-label">✨ AI Rewritten:</span> ${article.summary}` : 
+                article.summary;
+
             html += `
                 <div class="article-card">
                     <div>
                         <span class="source-tag">${article.source || 'News'}</span>
                         <span class="category-tag">${article.category || 'General'}</span>
+                        ${article.rewritten ? '<span class="ai-badge">✨ AI</span>' : ''}
                     </div>
                     ${imageHtml}
                     <h2><a href="${article.link}" target="_blank">${article.title}</a></h2>
-                    <div class="summary">${article.summary}</div>
+                    <div class="summary">${summaryHtml}</div>
                     <div class="meta">
                         <span class="source">📰 ${article.source || 'Unknown'}</span>
                         <span class="time">${timeAgo}</span>
