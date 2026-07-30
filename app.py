@@ -3,13 +3,12 @@ from flask_cors import CORS
 import requests
 import re
 from datetime import datetime
-import random
 import os
-from bs4 import BeautifulSoup
 import feedparser
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # This enables Cross-Origin Resource Sharing
 
 # ===== NEWS SOURCES =====
 NEWS_SOURCES = [
@@ -107,10 +106,6 @@ def get_articles():
     all_articles.sort(key=lambda x: x['published'], reverse=True)
     return all_articles
 
-def generate_fallback_article(title, summary):
-    """Return the original summary as fallback"""
-    return summary or f"Read more about {title}"
-
 # ===== ROUTES =====
 @app.route('/')
 def index():
@@ -129,76 +124,6 @@ def api_news():
 def api_categories():
     categories = list(set(s['category'] for s in NEWS_SOURCES))
     return jsonify({'categories': sorted(categories)})
-
-@app.route('/api/article')
-def get_article():
-    """Rewrite a real news article using AI"""
-    title = request.args.get('title', '')
-    summary = request.args.get('summary', '')
-    
-    if not title:
-        return jsonify({'error': 'No title provided'}), 400
-    
-    deepseek_key = os.environ.get('DEEPSEEK_API_KEY')
-    
-    if deepseek_key:
-        try:
-            url = "https://api.deepseek.com/v1/chat/completions"
-            headers = {
-                "Authorization": f"Bearer {deepseek_key}",
-                "Content-Type": "application/json"
-            }
-            
-            prompt = f"""Rewrite this news article in a fresh, engaging way:
-
-Original Title: {title}
-Original Content: {summary}
-
-IMPORTANT:
-- Rewrite it completely in your own words
-- Make it sound fresh and engaging
-- Keep it to 150-200 words
-- Write as a flowing news article
-- NO markdown, NO bullet points, NO headings
-- Just plain text paragraphs like a real news story
-- Make it interesting to read
-
-Rewritten article:"""
-            
-            data = {
-                "model": "deepseek-chat",
-                "messages": [
-                    {"role": "system", "content": "You are a professional journalist who rewrites news articles in a fresh, engaging style. Write in plain English with no markdown."},
-                    {"role": "user", "content": prompt}
-                ],
-                "temperature": 0.8,
-                "max_tokens": 400
-            }
-            
-            response = requests.post(url, headers=headers, json=data, timeout=15)
-            
-            if response.status_code == 200:
-                result = response.json()
-                article = result.get('choices', [{}])[0].get('message', {}).get('content', '')
-                if article and len(article) > 50:
-                    article = re.sub(r'\*\*([^*]+)\*\*', r'\1', article)
-                    article = re.sub(r'#{1,6}\s*', '', article)
-                    article = re.sub(r'[-*]\s+', '', article)
-                    return jsonify({
-                        'title': title,
-                        'content': article,
-                        'source': 'ai_rewritten',
-                        'word_count': len(article.split())
-                    })
-        except Exception as e:
-            print(f"DeepSeek error: {e}")
-    
-    return jsonify({
-        'title': title,
-        'content': summary or 'No content available',
-        'source': 'original',
-        'word_count': len((summary or '').split())
-    })
 
 @app.route('/health')
 def health():
