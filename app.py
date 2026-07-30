@@ -29,6 +29,53 @@ def clean_html(text):
     """Remove HTML tags from text"""
     return re.sub(r'<[^>]+>', '', text)
 
+def rewrite_article(title, summary):
+    """Rewrite the article in a unique, engaging way using AI"""
+    deepseek_key = os.environ.get('DEEPSEEK_API_KEY')
+    
+    if not deepseek_key:
+        return summary
+    
+    try:
+        url = "https://api.deepseek.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {deepseek_key}",
+            "Content-Type": "application/json"
+        }
+        
+        prompt = f"""Rewrite this news article in a unique, engaging way for a news app:
+
+Original Title: {title}
+Original Content: {summary}
+
+Requirements:
+- Make it sound fresh and interesting
+- Keep it to 2-3 sentences (max 60 words)
+- Don't just copy the original - rewrite it in your own words
+- Make it engaging for readers
+
+Rewritten version:"""
+        
+        data = {
+            "model": "deepseek-chat",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.8,
+            "max_tokens": 100
+        }
+        
+        response = requests.post(url, headers=headers, json=data, timeout=10)
+        
+        if response.status_code == 200:
+            result = response.json()
+            rewritten = result.get('choices', [{}])[0].get('message', {}).get('content', '')
+            if rewritten and len(rewritten) > 10:
+                return rewritten.strip()
+        
+        return summary
+    except Exception as e:
+        print(f"AI rewrite error: {e}")
+        return summary
+
 def get_articles():
     """Fetch articles from all news sources"""
     all_articles = []
@@ -62,7 +109,8 @@ def get_articles():
                     'source': source['name'],
                     'category': source['category'],
                     'published': published,
-                    'image': image
+                    'image': image,
+                    'rewritten': False
                 })
         except Exception as e:
             print(f"Error fetching {source['name']}: {e}")
@@ -79,12 +127,22 @@ def index():
 
 @app.route('/api/news')
 def api_news():
-    """API endpoint for news"""
+    """API endpoint for news with AI-rewritten articles"""
     articles = get_articles()
+    
+    # Rewrite the first 5 articles
+    for i, article in enumerate(articles[:5]):
+        if article.get('summary') and len(article['summary']) > 30:
+            rewritten = rewrite_article(article['title'], article['summary'])
+            if rewritten:
+                articles[i]['summary'] = rewritten
+                articles[i]['rewritten'] = True
+    
     return jsonify({
         'articles': articles,
         'total': len(articles),
-        'sources': len(NEWS_SOURCES)
+        'sources': len(NEWS_SOURCES),
+        'ai_rewrite_enabled': True
     })
 
 @app.route('/api/categories')
